@@ -1,4 +1,5 @@
 import authService from '../services/auth-service.js';
+import photoService from "../services/photo-service.js";
 
 const AuthController = {
     async register(req, res, next) {
@@ -8,6 +9,7 @@ const AuthController = {
             res.cookie('refreshToken', newUser.refreshToken, {httpOnly: true});
             return res.status(201).send();
         } catch (error) {
+            await photoService.deletePhoto(req.file.filename);
             next(error);
         }
     },

@@ -3,12 +3,13 @@ import UserModel from '../models/user-model.js';
 import tokenService from './token-service.js';
 import UserDto from '../dtos/user-dto.js';
 import ApiError from '../exceptions/api-error.js';
+import photoService from "./photo-service.js";
 
 const AuthService = {
     async register(body, photo) {
         const {name, gender, phone, password, interests} = body;
-        const photoLink = photo.filename;
         const interestsArray = JSON.parse(interests)
+
         const userWithSamePhone = await UserModel.findOne({where: {phone}});
         if (userWithSamePhone) {
             throw ApiError.BadRequest(`User with ${phone} phone number already exists`);
@@ -20,7 +21,7 @@ const AuthService = {
             gender,
             phone,
             password: hashedPassword,
-            photoLink,
+            photoLink: photo.filename,
             interests: interestsArray
         });
         const userDto = new UserDto(newUser);
