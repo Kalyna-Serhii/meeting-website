@@ -3,7 +3,6 @@ import UserModel from '../models/user-model.js';
 import tokenService from './token-service.js';
 import UserDto from '../dtos/user-dto.js';
 import ApiError from '../exceptions/api-error.js';
-import photoService from "./photo-service.js";
 
 const AuthService = {
     async register(body, photo) {

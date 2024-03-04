@@ -7,7 +7,9 @@ const PhotoService = {
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
         const photoPath = path.join(__dirname, '../../photos', photo);
-        await fs.unlink(photoPath);
+        try {
+            await fs.unlink(photoPath);
+        } catch (error) {}
     },
 };
 

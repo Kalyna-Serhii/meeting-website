@@ -21,7 +21,9 @@ const UserController = {
 
     async deleteUser(req, res, next) {
         try {
-            await userService.deleteUser(req.params.id);
+            await userService.deleteUser(req.cookies.accessToken);
+            res.clearCookie('accessToken');
+            res.clearCookie('refreshToken');
             return res.status(204).send();
         } catch (error) {
             next(error);

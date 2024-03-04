@@ -6,6 +6,6 @@ const router = express.Router();
 
 router.get("/users", userController.getUsers);
 router.patch("/user", upload.single('photo'), userController.updateUser);
-router.delete("/user/:id", userController.deleteUser);
+router.delete("/user", userController.deleteUser);
 
 export default router;
