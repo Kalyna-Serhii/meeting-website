@@ -11,10 +11,6 @@ const UserService = {
     },
 
     async updateUser(token, body, photo) {
-        if (!token) {
-            throw ApiError.UnauthorizedError();
-        }
-
         const {name, gender, phone, interests} = body;
         const interestsArray = JSON.parse(interests)
 
@@ -44,9 +40,6 @@ const UserService = {
     },
 
     async deleteUser(token) {
-        if (!token) {
-            throw ApiError.UnauthorizedError();
-        }
         const userData = tokenService.validateAccessToken(token);
         const id = userData.id;
 
