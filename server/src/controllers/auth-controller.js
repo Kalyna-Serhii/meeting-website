@@ -9,7 +9,11 @@ const AuthController = {
             res.cookie('refreshToken', newUser.refreshToken, {httpOnly: true});
             return res.status(201).send();
         } catch (error) {
-            await photoService.deletePhoto(req.file.filename);
+            try {
+                await photoService.deletePhoto(req.file);
+            } catch (error) {
+                next(error);
+            }
             next(error);
         }
     },
