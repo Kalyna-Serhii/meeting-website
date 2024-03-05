@@ -30,17 +30,25 @@ const UserService = {
         return users;
     },
 
-    async getUserById(id) {
-        const user = await UserModel.findByPk(id);
-        // Віддає номер телефону! Потрібно буде прибрати!
-        if (!user) {
+    async getUserById(token, targetUserId) {
+        const userData = tokenService.validateAccessToken(token);
+        const userId = userData.id;
+        const user = await UserModel.findByPk(userId);
+        const targetUser = await UserModel.findByPk(targetUserId);
+
+        if (!targetUser) {
             throw ApiError.BadRequest(`No user found`);
         }
-        return user;
+
+        if (!user.friends.includes(parseInt(targetUserId))) {
+            targetUser.phone = 'hidden';
+        }
+        return targetUser;
     },
 
     async getUserByToken(token) {
-        const userId = tokenService.validateAccessToken(token).id;
+        const userData = tokenService.validateAccessToken(token);
+        const userId = userData.id;
         const user = await UserModel.findByPk(userId);
         return user;
     },
@@ -50,13 +58,13 @@ const UserService = {
         const interestsArray = JSON.parse(interests)
 
         const userData = tokenService.validateAccessToken(token);
-        const id = userData.id;
-        const user = await UserModel.findByPk(id);
+        const userId = userData.id;
+        const user = await UserModel.findByPk(userId);
         if (!user) {
             throw ApiError.BadRequest(`No user found`);
         }
         const userWithSamePhone = await UserModel.findOne({where: {phone}});
-        if (userWithSamePhone && userWithSamePhone.id !== parseInt(id)) {
+        if (userWithSamePhone && userWithSamePhone.id !== parseInt(userId)) {
             throw ApiError.BadRequest(`User with ${phone} phone number already exists`);
         }
 

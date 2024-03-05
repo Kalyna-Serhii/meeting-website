@@ -5,8 +5,8 @@ import authMiddleware from "../middlewares/auth-middleware.js";
 
 const router = express.Router();
 
-router.get("/users", userController.getUsers);
-router.get("/user/:id", userController.getUserById);
+router.get("/users", authMiddleware.onlyAuthorized, userController.getUsers);
+router.get("/user/:id", authMiddleware.onlyAuthorized, userController.getUserById);
 router.get("/user", authMiddleware.onlyAuthorized, userController.getUserByToken);
 router.patch("/user", authMiddleware.onlyAuthorized, upload.single('photo'), userController.updateUser);
 router.delete("/user", authMiddleware.onlyAuthorized, userController.deleteUser);

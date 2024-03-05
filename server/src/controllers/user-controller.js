@@ -12,7 +12,7 @@ const UserController = {
 
     async getUserById(req, res, next) {
         try {
-            const user = await userService.getUserById(req.params.id);
+            const user = await userService.getUserById(req.cookies.accessToken, req.params.id);
             return res.status(200).json(user);
         } catch (error) {
             next(error);
