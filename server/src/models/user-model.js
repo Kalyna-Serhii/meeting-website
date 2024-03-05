@@ -33,6 +33,10 @@ const UserModel = sequelize.define(
             type: DataTypes.ARRAY(DataTypes.STRING),
             defaultValue: [],
         },
+        friends: {
+            type: DataTypes.ARRAY(DataTypes.INTEGER),
+            defaultValue: [],
+        },
     },
     {
         tableName: 'users',
