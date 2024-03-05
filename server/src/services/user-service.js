@@ -1,20 +1,32 @@
 import ApiError from "../exceptions/api-error.js";
 import UserModel from "../models/user-model.js";
-import TokenModel from "../models/token-model.js";
 import tokenService from "./token-service.js";
 import photoService from "./photo-service.js";
 import {Op} from "sequelize";
 
 const UserService = {
-    async getUsers(token) {
+    async getUsers(token, body) {
         const userId = tokenService.validateAccessToken(token).id;
         const user = await UserModel.findByPk(userId);
-        const users = await UserModel.findAll({where: {id: {[Op.not]: userId}}});
+
+        const {gender, minAge = 0, maxAge = 100} = body;
+
+        const genderFilter = gender && gender!=='all' ? {gender} : {};
+        const ageFilter = minAge || maxAge ? {age: {[Op.between]: [minAge, maxAge]}} : {};
+
+        const users = await UserModel.findAll({
+            where: {
+                id: {[Op.not]: userId},
+                ...genderFilter,
+                ...ageFilter
+            }
+        });
+
         users.forEach(userFromArray => {
             if (!user.friends.includes(userFromArray.id)) {
                 userFromArray.phone = 'hidden';
             }
-        })
+        });
         return users;
     },
 
@@ -25,7 +37,7 @@ const UserService = {
     },
 
     async updateUser(token, body, photo) {
-        const {name, gender, phone, interests} = body;
+        const {name, gender, age, phone, interests} = body;
         const interestsArray = JSON.parse(interests)
 
         const userData = tokenService.validateAccessToken(token);
@@ -42,6 +54,7 @@ const UserService = {
         const updatedFields = {};
         updatedFields.name = name;
         updatedFields.gender = gender;
+        updatedFields.age = age;
         updatedFields.phone = phone;
         updatedFields.interests = interestsArray;
 
