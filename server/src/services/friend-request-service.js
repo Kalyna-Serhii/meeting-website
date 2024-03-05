@@ -113,6 +113,9 @@ const FriendRequestService = {
         if (!user || !friend) {
             throw ApiError.BadRequest('No user found');
         }
+        if (userId === friendId) {
+            throw ApiError.BadRequest('Request to yourself');
+        }
         const userArray = user.friends.slice();
         const friendIndex = userArray.indexOf(friendId);
         const friendArray = friend.friends.slice();

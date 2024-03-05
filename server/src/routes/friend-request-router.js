@@ -9,6 +9,6 @@ router.get('/sent-friend-requests', authMiddleware.onlyAuthorized, friendRequest
 router.post('/send-friend-request', authMiddleware.onlyAuthorized, friendRequestController.sendFriendRequest);
 router.post('/accept-friend-request', authMiddleware.onlyAuthorized, friendRequestController.acceptFriendRequest);
 router.post('/reject-friend-request', authMiddleware.onlyAuthorized, friendRequestController.rejectFriendRequest);
-router.post('/delete-from-friends', authMiddleware.onlyAuthorized, friendRequestController.deleteFromFriends);
+router.delete('/delete-from-friends', authMiddleware.onlyAuthorized, friendRequestController.deleteFromFriends);
 
 export default router;
