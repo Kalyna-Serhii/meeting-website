@@ -32,18 +32,6 @@ const FriendRequestModel = sequelize.define(
     {
         tableName: 'friend_requests',
         timestamps: false, // відключення генерації полів createdAt і updatedAt
-        indexes: [
-            {
-                unique: true,
-                fields: ['senderId', 'receiverId'],
-                name: 'unique_sender_receiver'
-            },
-            {
-                unique: true,
-                fields: ['receiverId', 'senderId'],
-                name: 'unique_receiver_sender'
-            }
-        ]
     },
 );
 

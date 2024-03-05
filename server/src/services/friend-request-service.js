@@ -32,12 +32,15 @@ const FriendRequestService = {
         if (senderId === receiverId) {
             throw ApiError.BadRequest('Request to yourself');
         }
+        if (user.friends.includes(senderId)) {
+            throw ApiError.BadRequest('Already friends');
+        }
 
         const sameRequest = await friendRequestModel.findOne({where:  {
-            senderId, receiverId
+            senderId, receiverId, status: 'pending'
         }});
         const reverseRequest = await friendRequestModel.findOne({where: {
-            receiverId: senderId, senderId: receiverId
+            receiverId: senderId, senderId: receiverId, status: 'pending'
         }});
         if (sameRequest) {
             throw ApiError.BadRequest('Same request already exists');
@@ -62,13 +65,10 @@ const FriendRequestService = {
         }
 
         const request = await FriendRequestModel.findOne({where: {
-            senderId, receiverId
+            senderId, receiverId, status: 'pending'
         }});
         if (!request) {
             throw ApiError.BadRequest('No request found');
-        }
-        if (request.status !== 'pending') {
-            throw ApiError.BadRequest('Request already accepted or rejected');
         }
         if (receiver.friends.includes(senderId)) {
             throw ApiError.BadRequest('Already friends');
