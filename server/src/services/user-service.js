@@ -30,6 +30,15 @@ const UserService = {
         return users;
     },
 
+    async getUserById(id) {
+        const user = await UserModel.findByPk(id);
+        // Віддає номер телефону! Потрібно буде прибрати!
+        if (!user) {
+            throw ApiError.BadRequest(`No user found`);
+        }
+        return user;
+    },
+
     async getUserByToken(token) {
         const userId = tokenService.validateAccessToken(token).id;
         const user = await UserModel.findByPk(userId);
