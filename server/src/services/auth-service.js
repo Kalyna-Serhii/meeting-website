@@ -6,7 +6,7 @@ import ApiError from '../exceptions/api-error.js';
 
 const AuthService = {
     async register(body, photo) {
-        const {name, gender, phone, password, interests} = body;
+        const {name, gender, age, phone, password, interests} = body;
         const interestsArray = JSON.parse(interests)
 
         const userWithSamePhone = await UserModel.findOne({where: {phone}});
@@ -18,6 +18,7 @@ const AuthService = {
         const newUser = await UserModel.create({
             name,
             gender,
+            age,
             phone,
             password: hashedPassword,
             photoLink: photo.filename,

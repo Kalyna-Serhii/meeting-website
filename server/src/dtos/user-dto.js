@@ -5,6 +5,8 @@ class UserDto {
 
     gender;
 
+    age;
+
     phone;
 
     password;
@@ -19,6 +21,7 @@ class UserDto {
         this.id = model.id;
         this.name = model.name;
         this.gender = model.gender;
+        this.age = model.age;
         this.phone = model.phone;
         this.password = model.password;
         this.photoLink = model.photoLink;

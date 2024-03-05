@@ -17,6 +17,10 @@ const UserModel = sequelize.define(
             type: DataTypes.ENUM('man', 'woman'),
             allowNull: false,
         },
+        age: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
         phone: {
             type: DataTypes.STRING,
             allowNull: false,
