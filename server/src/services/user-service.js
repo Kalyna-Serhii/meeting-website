@@ -6,19 +6,21 @@ import {Op} from "sequelize";
 
 const UserService = {
     async getUsers(token, body) {
-        const userId = tokenService.validateAccessToken(token).id;
+        const userData = tokenService.validateAccessToken(token);
+        const userId = userData.id;
         const user = await UserModel.findByPk(userId);
 
-        const {gender, minAge = 0, maxAge = 100} = body;
+        const {gender, minAge = 0, maxAge = 100, interests} = body;
 
-        const genderFilter = gender && gender!=='all' ? {gender} : {};
+        const genderFilter = gender && gender !== 'all' ? {gender} : {};
         const ageFilter = minAge || maxAge ? {age: {[Op.between]: [minAge, maxAge]}} : {};
 
         const users = await UserModel.findAll({
             where: {
                 id: {[Op.not]: userId},
                 ...genderFilter,
-                ...ageFilter
+                ...ageFilter,
+                interests: {[Op.contains]: interests}
             }
         });
 
