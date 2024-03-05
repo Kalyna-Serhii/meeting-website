@@ -3,11 +3,25 @@ import UserModel from "../models/user-model.js";
 import TokenModel from "../models/token-model.js";
 import tokenService from "./token-service.js";
 import photoService from "./photo-service.js";
+import {Op} from "sequelize";
 
 const UserService = {
-    async getUsers() {
-        const users = await UserModel.findAll();
+    async getUsers(token) {
+        const userId = tokenService.validateAccessToken(token).id;
+        const user = await UserModel.findByPk(userId);
+        const users = await UserModel.findAll({where: {id: {[Op.not]: userId}}});
+        users.forEach(userFromArray => {
+            if (!user.friends.includes(userFromArray.id)) {
+                userFromArray.phone = 'hidden';
+            }
+        })
         return users;
+    },
+
+    async getUserByToken(token) {
+        const userId = tokenService.validateAccessToken(token).id;
+        const user = await UserModel.findByPk(userId);
+        return user;
     },
 
     async updateUser(token, body, photo) {
@@ -16,7 +30,7 @@ const UserService = {
 
         const userData = tokenService.validateAccessToken(token);
         const id = userData.id;
-        const user = await UserModel.findOne({where: {id}});
+        const user = await UserModel.findByPk(id);
         if (!user) {
             throw ApiError.BadRequest(`No user found`);
         }
@@ -43,14 +57,11 @@ const UserService = {
         const userData = tokenService.validateAccessToken(token);
         const id = userData.id;
 
-        const user = await UserModel.findOne({where: {id}});
+        const user = await UserModel.findByPk(id);
         if (!user) {
             throw ApiError.BadRequest(`No user found`);
         }
-        const userToken = await TokenModel.findOne({where: {userId: id}});
-        if (userToken) {
-            await userToken.destroy();
-        }
+
         await photoService.deletePhoto(user.photoLink);
         await user.destroy();
     },

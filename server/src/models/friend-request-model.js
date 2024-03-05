@@ -1,5 +1,5 @@
-import { DataTypes } from 'sequelize';
-import { sequelize } from '../database/database.config.js';
+import {DataTypes} from 'sequelize';
+import {sequelize} from '../database/database.config.js';
 import UserModel from "./user-model.js";
 
 const FriendRequestModel = sequelize.define(
@@ -47,7 +47,7 @@ const FriendRequestModel = sequelize.define(
     },
 );
 
-FriendRequestModel.belongsTo(UserModel, { foreignKey: 'senderId' });
-FriendRequestModel.belongsTo(UserModel, { foreignKey: 'receiverId' });
+FriendRequestModel.belongsTo(UserModel, {foreignKey: 'senderId', onDelete: 'CASCADE'});
+FriendRequestModel.belongsTo(UserModel, {foreignKey: 'receiverId', onDelete: 'CASCADE'});
 
 export default FriendRequestModel;

@@ -3,8 +3,17 @@ import userService from "../services/user-service.js";
 const UserController = {
     async getUsers(req, res, next) {
         try {
-            const users = await userService.getUsers();
+            const users = await userService.getUsers(req.cookies.accessToken);
             return res.status(200).json(users);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    async getUserByToken(req, res, next) {
+        try {
+            const user = await userService.getUserByToken(req.cookies.accessToken);
+            return res.status(200).json(user);
         } catch (error) {
             next(error);
         }

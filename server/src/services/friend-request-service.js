@@ -25,7 +25,7 @@ const FriendRequestService = {
         const userData = tokenService.validateAccessToken(token);
         const senderId = userData.id;
         const {receiverId} = body;
-        const user = await userModel.findOne({where: {id: receiverId}});
+        const user = await userModel.findByPk(receiverId);
         if (!user) {
             throw ApiError.BadRequest('No user found');
         }
@@ -54,9 +54,9 @@ const FriendRequestService = {
         const receiverId = receiverData.id;
         const {senderId} = body;
 
-        const receiver = await userModel.findOne({where: {id: receiverId}});
+        const receiver = await userModel.findByPk(receiverId);
 
-        const sender = await userModel.findOne({where: {id: senderId}});
+        const sender = await userModel.findByPk(senderId);
         if (!sender) {
             throw ApiError.BadRequest('No user found');
         }
@@ -86,7 +86,7 @@ const FriendRequestService = {
         const receiverId = receiverData.id;
         const {senderId} = body;
 
-        const sender = await userModel.findOne({where: {id: senderId}});
+        const sender = await userModel.findByPk(senderId);
         if (!sender) {
             throw ApiError.BadRequest('No user found');
         }
@@ -108,8 +108,8 @@ const FriendRequestService = {
         const userData = tokenService.validateAccessToken(token);
         const userId = userData.id;
         const {friendId} = body;
-        const user = await userModel.findOne({where: {id: userId}});
-        const friend = await userModel.findOne({where: {id: friendId}});
+        const user = await userModel.findByPk(userId);
+        const friend = await userModel.findByPk(friendId);
         if (!user || !friend) {
             throw ApiError.BadRequest('No user found');
         }

@@ -63,7 +63,7 @@ const AuthService = {
         if (!userData || !tokenFromDb) {
             throw ApiError.UnauthorizedError();
         }
-        const user = await UserModel.findOne({where: {id: userData.id}});
+        const user = await UserModel.findByPk(userData.id);
         const userDto = new UserDto(user);
         const tokens = tokenService.generateTokens({...userDto});
         await tokenService.saveToken(userDto.id, tokens.refreshToken);

@@ -19,6 +19,6 @@ const TokenModel = sequelize.define(
     },
 );
 
-TokenModel.belongsTo(UserModel, {foreignKey: 'userId'});
+TokenModel.belongsTo(UserModel, {foreignKey: 'userId', onDelete: 'CASCADE'});
 
 export default TokenModel;

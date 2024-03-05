@@ -13,6 +13,8 @@ class UserDto {
 
     interests;
 
+    friends;
+
     constructor(model) {
         this.id = model.id;
         this.name = model.name;
@@ -21,6 +23,7 @@ class UserDto {
         this.password = model.password;
         this.photoLink = model.photoLink;
         this.interests = model.interests;
+        this.friends = model.friends;
     }
 }
 
