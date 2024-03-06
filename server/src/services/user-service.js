@@ -1,6 +1,6 @@
 import ApiError from "../exceptions/api-error.js";
 import UserModel from "../models/user-model.js";
-import FriendsModel from "../models/friends-model.js";
+import UserFriendsModel from "../models/friends-model.js";
 import tokenService from "./token-service.js";
 import photoService from "./photo-service.js";
 import {Op} from "sequelize";
@@ -25,7 +25,7 @@ const UserService = {
             }
         });
 
-        const friends = await FriendsModel.findAll({
+        const friends = await UserFriendsModel.findAll({
             where: {
                 [Op.or]: [{user1Id: userId}, {user2Id: userId}]
             }
@@ -57,7 +57,7 @@ const UserService = {
             throw ApiError.BadRequest(`No user found`);
         }
 
-        const isFriends = await FriendsModel.findOne({
+        const isFriends = await UserFriendsModel.findOne({
             where: {
                 [Op.or]: [{user1Id: userId, user2Id: targetUserId}, {user1Id: targetUserId, user2Id: userId}]
             }
@@ -76,7 +76,7 @@ const UserService = {
         const userId = userData.id;
 
         const user = await UserModel.findByPk(userId);
-        const friends = await FriendsModel.findAll({
+        const friends = await UserFriendsModel.findAll({
             where: {
                 [Op.or]: [{user1Id: userId}, {user2Id: userId}]
             }

@@ -1,7 +1,7 @@
 import ApiError from "../exceptions/api-error.js";
 import FriendRequestModel from "../models/friend-request-model.js";
 import friendRequestModel from "../models/friend-request-model.js";
-import FriendsModel from "../models/friends-model.js";
+import UserFriendsModel from "../models/friends-model.js";
 import tokenService from "./token-service.js";
 import userModel from "../models/user-model.js";
 import {Op} from "sequelize";
@@ -35,7 +35,7 @@ const FriendRequestService = {
             throw ApiError.BadRequest('Request to yourself');
         }
 
-        const alreadyFriends = await FriendsModel.findOne({
+        const alreadyFriends = await UserFriendsModel.findOne({
             where: {
                 [Op.or]: [{user1Id: senderId, user2Id: receiverId}, {user1Id: receiverId, user2Id: senderId}]
             }
@@ -83,7 +83,7 @@ const FriendRequestService = {
             throw ApiError.BadRequest('No request found');
         }
 
-        const alreadyFriends = await FriendsModel.findOne({
+        const alreadyFriends = await UserFriendsModel.findOne({
             where: {
                 [Op.or]: [{user1Id: senderId, user2Id: receiverId}, {user1Id: receiverId, user2Id: senderId}]
             }
@@ -92,7 +92,7 @@ const FriendRequestService = {
             throw ApiError.BadRequest('Already friends');
         }
 
-        await FriendsModel.create({user1Id: senderId, user2Id: receiverId});
+        await UserFriendsModel.create({user1Id: senderId, user2Id: receiverId});
         await request.update({status: 'accepted'});
     },
 
@@ -134,7 +134,7 @@ const FriendRequestService = {
         if (userId === friendId) {
             throw ApiError.BadRequest('Request to yourself');
         }
-        const friends = await FriendsModel.findOne({
+        const friends = await UserFriendsModel.findOne({
             where: {
                 [Op.or]: [{user1Id: userId, user2Id: friendId}, {user1Id: friendId, user2Id: userId}]
             }
