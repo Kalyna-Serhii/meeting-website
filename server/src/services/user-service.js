@@ -14,13 +14,14 @@ const UserService = {
 
         const genderFilter = gender && gender !== 'all' ? {gender} : {};
         const ageFilter = minAge || maxAge ? {age: {[Op.between]: [minAge, maxAge]}} : {};
+        const interestsFilter = interests ? {interests: {[Op.contains]: interests}} : {};
 
         const users = await UserModel.findAll({
             where: {
                 id: {[Op.not]: userId},
                 ...genderFilter,
                 ...ageFilter,
-                interests: {[Op.contains]: interests}
+                ...interestsFilter
             }
         });
 
