@@ -8,8 +8,10 @@ const PhotoService = {
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
         try {
-            const photoPath = path.join(__dirname, '../../photos', file.filename);
-            await fs.unlink(photoPath);
+            const photoPath = path.join(__dirname, '../../photos', file);
+            try {
+                await fs.unlink(photoPath);
+            } catch (error) {}
         } catch (error) {
             throw ApiError.BadRequest('No photo found');
         }
