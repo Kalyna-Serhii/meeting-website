@@ -4,7 +4,7 @@ import cors from 'cors';
 import corsOptions from './src/cors/cors.config.js';
 import cookieParser from 'cookie-parser';
 import errorMiddleware from './src/middlewares/error-middleware.js';
-import {authRouter, userRouter, friendRequestRouter} from './src/routes/index.js';
+import {authRouter, friendRequestRouter, userRouter} from './src/routes/index.js';
 
 const HOST = process.env.SERVER_HOST;
 const PORT = process.env.SERVER_PORT;

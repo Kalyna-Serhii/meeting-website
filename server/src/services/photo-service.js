@@ -11,7 +11,8 @@ const PhotoService = {
             const photoPath = path.join(__dirname, '../../photos', file);
             try {
                 await fs.unlink(photoPath);
-            } catch (error) {}
+            } catch (error) {
+            }
         } catch (error) {
             throw ApiError.BadRequest('No photo found');
         }

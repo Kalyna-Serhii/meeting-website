@@ -1,5 +1,6 @@
 import ApiError from "../exceptions/api-error.js";
 import UserModel from "../models/user-model.js";
+import FriendsModel from "../models/friends-model.js";
 import tokenService from "./token-service.js";
 import photoService from "./photo-service.js";
 import {Op} from "sequelize";
@@ -8,7 +9,6 @@ const UserService = {
     async getUsers(token, body) {
         const userData = tokenService.validateAccessToken(token);
         const userId = userData.id;
-        const user = await UserModel.findByPk(userId);
 
         const {gender, minAge = 0, maxAge = 100, interests} = body;
 
@@ -25,10 +25,25 @@ const UserService = {
             }
         });
 
+        const friends = await FriendsModel.findAll({
+            where: {
+                [Op.or]: [{user1Id: userId}, {user2Id: userId}]
+            }
+        });
+
+        let userFriendsIds = [];
+        friends.forEach(friendsRow => {
+            if (friendsRow.user1Id === userId) {
+                userFriendsIds.push(friendsRow.user2Id)
+            } else {
+                userFriendsIds.push(friendsRow.user1Id)
+            }
+        });
         users.forEach(userFromArray => {
-            if (!user.friends.includes(userFromArray.id)) {
+            if (!userFriendsIds.includes(userFromArray.id)) {
                 userFromArray.phone = 'hidden';
             }
+            delete userFromArray.dataValues.password;
         });
         return users;
     },
@@ -36,23 +51,48 @@ const UserService = {
     async getUserById(token, targetUserId) {
         const userData = tokenService.validateAccessToken(token);
         const userId = userData.id;
-        const user = await UserModel.findByPk(userId);
         const targetUser = await UserModel.findByPk(targetUserId);
 
         if (!targetUser) {
             throw ApiError.BadRequest(`No user found`);
         }
 
-        if (!user.friends.includes(parseInt(targetUserId))) {
+        const isFriends = await FriendsModel.findOne({
+            where: {
+                [Op.or]: [{user1Id: userId, user2Id: targetUserId}, {user1Id: targetUserId, user2Id: userId}]
+            }
+        });
+        if (!isFriends) {
             targetUser.phone = 'hidden';
         }
+
+        delete targetUser.dataValues.password;
+
         return targetUser;
     },
 
     async getUserByToken(token) {
         const userData = tokenService.validateAccessToken(token);
         const userId = userData.id;
+
         const user = await UserModel.findByPk(userId);
+        const friends = await FriendsModel.findAll({
+            where: {
+                [Op.or]: [{user1Id: userId}, {user2Id: userId}]
+            }
+        });
+
+        let friendsIds = [];
+        friends.forEach(friendsRow => {
+            if (friendsRow.user1Id === userId) {
+                friendsIds.push(friendsRow.user2Id)
+            } else {
+                friendsIds.push(friendsRow.user1Id)
+            }
+        });
+        user.dataValues.friends = friendsIds;
+        delete user.dataValues.password;
+
         return user;
     },
 
