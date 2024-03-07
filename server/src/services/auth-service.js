@@ -1,5 +1,7 @@
 import bcrypt from 'bcrypt';
 import UserModel from '../models/user-model.js';
+import InterestModel from '../models/interest-model.js';
+import UserInterestModel from "../models/user-interest-model.js";
 import tokenService from './token-service.js';
 import UserDto from '../dtos/user-dto.js';
 import ApiError from '../exceptions/api-error.js';
@@ -22,8 +24,21 @@ const AuthService = {
             phone,
             password: hashedPassword,
             photoLink: photo.filename,
-            interests: interestsArray
         });
+
+        for (const interest of interestsArray) {
+
+            let existsInterest = await InterestModel.findOne({where: {name: interest}});
+            if (!existsInterest) {
+                existsInterest = await InterestModel.create({name: interest});
+            }
+
+            await UserInterestModel.create({
+                UserId: newUser.id,
+                InterestId: existsInterest.id
+            });
+        }
+
         const userDto = new UserDto(newUser);
         const tokens = tokenService.generateTokens({...userDto});
         await tokenService.saveToken(userDto.id, tokens.refreshToken);

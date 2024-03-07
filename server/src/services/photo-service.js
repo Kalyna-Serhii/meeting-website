@@ -1,7 +1,6 @@
 import {fileURLToPath} from "url";
 import path from "path";
 import fs from "fs/promises";
-import ApiError from "../exceptions/api-error.js";
 
 const PhotoService = {
     async deletePhoto(file) {
@@ -14,7 +13,6 @@ const PhotoService = {
             } catch (error) {
             }
         } catch (error) {
-            throw ApiError.BadRequest('No photo found');
         }
     },
 };

@@ -1,9 +1,11 @@
 import ApiError from "../exceptions/api-error.js";
 import UserModel from "../models/user-model.js";
-import UserFriendsModel from "../models/friends-model.js";
+import UserFriendModel from "../models/user-friend-model.js";
 import tokenService from "./token-service.js";
 import photoService from "./photo-service.js";
 import {Op} from "sequelize";
+import InterestModel from "../models/interest-model.js";
+import UserInterestModel from "../models/user-interest-model.js";
 
 const UserService = {
     async getUsers(token, body) {
@@ -14,18 +16,36 @@ const UserService = {
 
         const genderFilter = gender && gender !== 'all' ? {gender} : {};
         const ageFilter = minAge || maxAge ? {age: {[Op.between]: [minAge, maxAge]}} : {};
-        const interestsFilter = interests ? {interests: {[Op.contains]: interests}} : {};
 
-        const users = await UserModel.findAll({
+        let users = await UserModel.findAll({
             where: {
                 id: {[Op.not]: userId},
                 ...genderFilter,
                 ...ageFilter,
-                ...interestsFilter
             }
         });
 
-        const friends = await UserFriendsModel.findAll({
+        if (interests) {
+            let filteredUsers = [];
+            for (const userFromArray of users) {
+                const userFromArrayInterestsIds = await UserInterestModel.findAll({
+                    where: {UserId: userFromArray.id},
+                });
+
+                let userFromArrayInterests = [];
+                for (const interest of userFromArrayInterestsIds) {
+                    const interestName = await InterestModel.findByPk(interest.InterestId);
+                    userFromArrayInterests.push(interestName.name);
+                }
+
+                if (interests.every(interest => userFromArrayInterests.includes(interest))) {
+                    filteredUsers.push(userFromArray);
+                }
+            }
+            users = filteredUsers;
+        }
+
+        const friends = await UserFriendModel.findAll({
             where: {
                 [Op.or]: [{user1Id: userId}, {user2Id: userId}]
             }
@@ -45,6 +65,7 @@ const UserService = {
             }
             delete userFromArray.dataValues.password;
         });
+
         return users;
     },
 
@@ -57,7 +78,7 @@ const UserService = {
             throw ApiError.BadRequest(`No user found`);
         }
 
-        const isFriends = await UserFriendsModel.findOne({
+        const isFriends = await UserFriendModel.findOne({
             where: {
                 [Op.or]: [{user1Id: userId, user2Id: targetUserId}, {user1Id: targetUserId, user2Id: userId}]
             }
@@ -65,6 +86,15 @@ const UserService = {
         if (!isFriends) {
             targetUser.phone = 'hidden';
         }
+
+        const interestsFromDb = await UserInterestModel.findAll({where: {UserId: targetUserId}});
+        let interests = [];
+        for (const interestRow of interestsFromDb) {
+            const interestId = interestRow.InterestId;
+            const interest = await InterestModel.findByPk(interestId);
+            interests.push(interest.name);
+        }
+        targetUser.dataValues.interests = interests;
 
         delete targetUser.dataValues.password;
 
@@ -76,7 +106,7 @@ const UserService = {
         const userId = userData.id;
 
         const user = await UserModel.findByPk(userId);
-        const friends = await UserFriendsModel.findAll({
+        const friends = await UserFriendModel.findAll({
             where: {
                 [Op.or]: [{user1Id: userId}, {user2Id: userId}]
             }
@@ -91,6 +121,16 @@ const UserService = {
             }
         });
         user.dataValues.friends = friendsIds;
+
+        const interestsFromDb = await UserInterestModel.findAll({where: {UserId: userId}});
+        let interests = [];
+        for (const interestRow of interestsFromDb) {
+            const interestId = interestRow.InterestId;
+            const interest = await InterestModel.findByPk(interestId);
+            interests.push(interest.name);
+        }
+        user.dataValues.interests = interests;
+
         delete user.dataValues.password;
 
         return user;
@@ -116,11 +156,26 @@ const UserService = {
         updatedFields.gender = gender;
         updatedFields.age = age;
         updatedFields.phone = phone;
-        updatedFields.interests = interestsArray;
 
         if (photo) {
             updatedFields.photoLink = photo.filename;
             await photoService.deletePhoto(user.photoLink);
+        }
+
+        const userInterests = await UserInterestModel.findAll({where: {UserId: userId}});
+        for (const userInterest of userInterests) {
+            await userInterest.destroy();
+        }
+        for (const interest of interestsArray) {
+            let existsInterest = await InterestModel.findOne({where: {name: interest}});
+            if (!existsInterest) {
+                existsInterest = await InterestModel.create({name: interest});
+            }
+
+            await UserInterestModel.create({
+                UserId: user.id,
+                InterestId: existsInterest.id
+            });
         }
 
         await user.update(updatedFields);

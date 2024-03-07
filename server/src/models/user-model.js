@@ -33,10 +33,6 @@ const UserModel = sequelize.define(
         photoLink: {
             type: DataTypes.STRING,
         },
-        interests: {
-            type: DataTypes.ARRAY(DataTypes.STRING),
-            defaultValue: [],
-        },
     },
     {
         tableName: 'users',
