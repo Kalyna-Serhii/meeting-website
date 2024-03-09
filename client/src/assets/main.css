@@ -1,0 +1,81 @@
+:root {
+    --bg_gradient: linear-gradient(to bottom right, #00c6ff, #0072ff);
+    --bg: #02a4fd;
+    --primary: white;
+    --secondary: #fff9;
+    --invert_bg: white;
+    --invert_primary: #333;
+    --invert_secondary: #3335;
+    --link_hover_color: #2efff8;
+    --radius: 5px;
+    --button_radius: 2px;
+}
+* {
+    margin: 0;
+    padding: 0;
+}
+a {
+    text-decoration: none;
+    color: var(--primary);
+}
+body {
+    display: grid;
+    justify-items: center;
+    font-family: 'Rubik', sans-serif;
+    min-height: 100vh;
+    grid-template-rows: auto 1fr;
+    padding-bottom: 10px;
+}
+
+/* Layout */
+.component {
+    width: 100vw;
+    max-width: 1200px;
+    padding: 0 15px;
+    display: grid;
+    grid-template-columns: 1fr 330px;
+    grid-template-rows: 100px 1fr minmax(100px, auto);
+    grid-auto-rows: 50px;
+    gap: 10px;
+}
+.component > * {
+    padding: 8px 10px;
+    background: var(--bg_gradient);
+    color: var(--primary);
+}
+
+/* Header */
+header {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    justify-content: space-between;
+    grid-column: span 2;
+}
+header .logo {
+    padding: 6px 20px;
+    text-transform: uppercase;
+    font-weight: 500;
+    border-radius: var(--button_radius);
+    background: var(--primary);
+    color: var(--bg);
+}
+header .menu {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 300;
+}
+header .auth {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    gap: 15px;
+    margin-left: auto;
+}
+header .avatar {
+    height: 50px;
+    border-radius: 50%;
+}

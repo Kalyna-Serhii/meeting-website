@@ -29,11 +29,6 @@ const userApi = {
         try {
             return await $api.get('/user');
         } catch (error) {
-            if (error.response) {
-                alert(`Failed to receive user: ${error.response.data.message}`);
-            } else {
-                alert(`Failed to receive user: ${error.message || error}`);
-            }
         }
     },
 
