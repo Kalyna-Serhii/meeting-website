@@ -12,14 +12,17 @@
     --radius: 5px;
     --button_radius: 2px;
 }
+
 * {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 a {
     text-decoration: none;
     color: var(--primary);
 }
+
 body {
     display: grid;
     justify-items: center;
@@ -40,6 +43,7 @@ body {
     grid-auto-rows: 50px;
     gap: 10px;
 }
+
 .component > * {
     padding: 8px 10px;
     background: var(--bg_gradient);
@@ -54,6 +58,7 @@ header {
     justify-content: space-between;
     grid-column: span 2;
 }
+
 header .logo {
     padding: 6px 20px;
     text-transform: uppercase;
@@ -62,6 +67,7 @@ header .logo {
     background: var(--primary);
     color: var(--bg);
 }
+
 header .menu {
     flex: 1;
     display: flex;
@@ -70,6 +76,7 @@ header .menu {
     font-size: 20px;
     font-weight: 300;
 }
+
 header .auth {
     display: flex;
     align-items: center;
@@ -78,9 +85,85 @@ header .auth {
     margin-left: auto;
     font-weight: 300;
 }
+
 header .avatar {
     height: 50px;
     border-radius: 50%;
+}
+
+/* Content */
+.content {
+    grid-column: 1;
+}
+
+.content-title {
+    text-align: center;
+    font-weight: 500;
+    margin: 10px 0 15px;
+    font-size: 22px;
+}
+
+.content-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+.card {
+    padding: 5px;
+    width: 100%;
+    color: var(--invert_primary);
+    background: var(--invert_bg);
+    font-weight: 300;
+    font-size: 15px;
+    overflow: hidden;
+    border-radius: var(--radius);
+}
+
+.card-img {
+    border-radius: var(--radius);
+    height: 20vw;
+    min-height: 150px;
+    max-height: 250px;
+}
+
+.card-content {
+    display: grid;
+    padding: 5px;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 3px;
+}
+
+.card-desc {
+    opacity: 0.8;
+    margin-bottom: 10px;
+}
+
+.card-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card-age,
+.card-gender {
+    letter-spacing: -1px;
+    font-size: 20px;
+}
+
+.card-friend-button {
+    cursor: pointer;
+    display: inline-block;
+    padding: 7px 25px;
+    margin: 10px auto 15px;
+    background: var(--bg_gradient);
+    color: var(--primary);
+    border-radius: var(--button_radius);
+    font-size: 15px;
 }
 
 /* Footer */
@@ -99,4 +182,41 @@ footer ul {
 footer li {
     margin-right: 25%;
     font-size: 15px;
+}
+
+/* UI Components */
+.block-title {
+    font-weight: 500;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+.block {
+    width: 100%;
+    text-transform: initial;
+    font-weight: 300;
+    font-size: 15px;
+    background: var(--invert_bg);
+    color: var(--invert_primary);
+    padding: 8px;
+    border-radius: var(--radius);
+    margin-bottom: 10px;
+}
+.block-flex {
+    display: flex;
+    gap: 5px;
+}
+.block-input {
+    width: 100%;
+    flex-grow: 1;
+    padding: 5px;
+    outline: none;
+    border: 0.5px solid var(--invert_secondary);
+    border-radius: var(--button_radius);
+}
+button {
+    cursor: pointer;
+    background: var(--bg_gradient);
+    color: var(--primary);
+    border: 0.5px solid var(--invert_secondary);
+    border-radius: var(--button_radius);
 }
