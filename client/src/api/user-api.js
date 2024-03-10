@@ -1,27 +1,16 @@
 import $api from "@/api/apiInstance";
 
 const userApi = {
-    async getUsers() {
+    async getUsers(options) {
         try {
-            return await $api.get('/users');
-        } catch (error) {
-            if (error.response) {
-                alert(`Failed to receive users: ${error.response.data.message}`);
-            } else {
-                alert(`Failed to receive users: ${error.message || error}`);
-            }
-        }
+            return await $api.get('/users', options);
+        } catch (error) {}
     },
 
     async getUserById(userId) {
         try {
             return await $api.get(`/user/${userId}`);
         } catch (error) {
-            if (error.response) {
-                alert(`Failed to receive user: ${error.response.data.message}`);
-            } else {
-                alert(`Failed to receive user: ${error.message || error}`);
-            }
         }
     },
 

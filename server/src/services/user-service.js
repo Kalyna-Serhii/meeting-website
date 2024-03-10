@@ -8,11 +8,11 @@ import InterestModel from "../models/interest-model.js";
 import UserInterestModel from "../models/user-interest-model.js";
 
 const UserService = {
-    async getUsers(token, body) {
+    async getUsers(token, params) {
         const userData = tokenService.validateAccessToken(token);
         const userId = userData.id;
 
-        const {gender, minAge = 0, maxAge = 100, interests} = body;
+        const {gender, minAge = 0, maxAge = 100, interests} = params;
 
         const genderFilter = gender && gender !== 'all' ? {gender} : {};
         const ageFilter = minAge || maxAge ? {age: {[Op.between]: [minAge, maxAge]}} : {};

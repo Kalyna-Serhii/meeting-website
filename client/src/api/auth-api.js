@@ -29,11 +29,6 @@ const authApi = {
         try {
             return await $api.post('/logout', {});
         } catch (error) {
-            if (error.response) {
-                alert(`Failed to logout: ${error.response.data.message}`);
-            } else {
-                alert(`Failed to logout: ${error.message || error}`);
-            }
         }
     },
 };
