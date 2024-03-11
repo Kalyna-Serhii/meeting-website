@@ -83,7 +83,7 @@ export default {
     return {
       serverURL,
       users: [],
-      interests: ['interest1', 'interest3', 'sport', 'music', 'cinema', 'books', 'travel', 'games', 'cooking', 'art', 'theatre', 'fashion',
+      interests: ['sport', 'music', 'cinema', 'books', 'travel', 'games', 'cooking', 'art', 'theatre', 'fashion',
         'photography', 'cars', 'animals', 'nature', 'science', 'technology', 'politics', 'psychology', 'history',
         'religion', 'philosophy'],
       filter: {

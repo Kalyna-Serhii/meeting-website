@@ -108,7 +108,7 @@ header .avatar {
 
 .card {
     padding: 5px;
-    width: 100%;
+    max-width: 300px;
     color: var(--invert_primary);
     background: var(--invert_bg);
     font-weight: 300;
@@ -177,36 +177,6 @@ header .avatar {
     margin-top: 4px;
     padding-top: 4px;
 }
-.sidebar .block {
-    display: block;
-}
-.sidebar .block-flex {
-    display: flex;
-    align-items: center;
-}
-.sidebar .block,
-.sidebar .block-flex {
-    justify-content: space-around;
-    margin-bottom: 5%;
-    width: 100%;
-    text-transform: initial;
-    font-size: 15px;
-    background: var(--invert_bg);
-    color: var(--invert_primary);
-    padding: 8px;
-    border-radius: var(--radius);
-}
-.sidebar .block-item input {
-    margin: 0 5px;
-}
-.sidebar .block-button {
-    height: 55px;
-}
-.sidebar .block-button button {
-    width: 100%;
-    height: 100%;
-    padding: 10px;
-}
 
 /* Footer */
 footer {
@@ -226,6 +196,36 @@ footer li {
 }
 
 /* UI Components */
+.block {
+    display: block;
+}
+.block-flex {
+    display: flex;
+    align-items: center;
+}
+.block,
+.block-flex {
+    justify-content: space-around;
+    margin-bottom: 5%;
+    width: 100%;
+    text-transform: initial;
+    font-size: 15px;
+    background: var(--invert_bg);
+    color: var(--invert_primary);
+    padding: 8px;
+    border-radius: var(--radius);
+}
+.block-item input {
+    margin: 0 5px;
+}
+.block-button {
+    height: 55px;
+}
+.block-button button {
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+}
 .block-title {
     font-weight: 500;
     font-size: 16px;
@@ -245,4 +245,13 @@ button {
     color: var(--primary);
     border: 0.5px solid var(--invert_secondary);
     border-radius: var(--button_radius);
+}
+
+/* Register Form */
+#register-form {
+    display: grid;
+    gap: 10%;
+    grid-template-columns: 2fr 1fr;
+    /*grid-template-rows: repeat(4, auto);*/
+    /*padding: 10px;*/
 }
