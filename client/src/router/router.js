@@ -11,10 +11,10 @@ const router = createRouter({
             }
         },
         {
-            path: '/register',
-            component: () => import('../pages/RegisterPage.vue'),
+            path: '/auth',
+            component: () => import('../pages/AuthPage.vue'),
             meta: {
-                title: 'Register'
+                title: 'Authorization'
             }
         },
     ]

@@ -11,8 +11,7 @@
       </router-link>
     </nav>
     <nav v-else class="auth">
-      <router-link to="/register">Register</router-link>
-      <router-link to="/login">Login</router-link>
+      <router-link to="/auth">Auth</router-link>
     </nav>
     <i class="fa-solid fa-bars mobile-menu"></i>
   </header>
@@ -37,15 +36,6 @@ export default {
   },
   async mounted() {
     await this.getUser();
-    // localStorage.setItem('isAuth', true);
-    // localStorage.removeItem('isAuth');
-
-    // await api.authApi.login({
-    //       phone: '0689225160',
-    //       password: '12345678'
-    //     }
-    // )
-    // await api.authApi.logout()
   },
 };
 </script>

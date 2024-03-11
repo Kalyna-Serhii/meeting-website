@@ -21,6 +21,7 @@ $axios.interceptors.response.use(config => config, async error => {
         } catch (refreshError) {
             if (refreshError.response && refreshError.response.status === 401) {
                 await router.push('/login');
+                await router.push('/auth');
             } else {
                 throw refreshError;
             }
