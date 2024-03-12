@@ -7,7 +7,7 @@
     <nav v-if="isAuth" class="auth">
       <router-link to="/logout">Logout</router-link>
       <router-link to="/profile">
-        <img :src="serverURL + /photos/ + user.photoLink" alt="avatar" class="avatar">
+        <img :src="serverURL + /photos/ + $store.state.currentUser?.photoLink" alt="avatar" class="avatar">
       </router-link>
     </nav>
     <nav v-else class="auth">
@@ -25,13 +25,15 @@ export default {
   data() {
     return {
       serverURL,
-      user: {},
       isAuth: localStorage.getItem('isAuth') || null,
     };
   },
   methods: {
     async getUser() {
-      this.user = await api.userApi.getUserByToken();
+      const user = await api.userApi.getUserByToken();
+      if (user) {
+        this.$store.commit('setCurrentUser', user);
+      }
     },
   },
   async mounted() {

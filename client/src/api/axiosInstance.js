@@ -13,19 +13,12 @@ const $axios = createAxiosInstance(serverURL);
 
 $axios.interceptors.response.use(config => config, async error => {
     const originalRequest = error.config;
-    if (error.response && error.response.status === 401 && originalRequest && !error.config._isRetry) {
-        originalRequest._isRetry = true;
-        try {
-            await axios.get(`${serverURL}/refresh`, {withCredentials: true});
-            return $axios(originalRequest);
-        } catch (refreshError) {
-            if (refreshError.response && refreshError.response.status === 401) {
-                await router.push('/login');
-                await router.push('/auth');
-            } else {
-                throw refreshError;
-            }
-        }
+    if (error.response && error.response.status === 401 && originalRequest.url !== `${serverURL}/refresh`) {
+        await $axios.get(`${serverURL}/refresh`, {withCredentials: true});
+        return $axios(originalRequest);
+    } else if (error.response && error.response.status === 401 && error.config.url === `${serverURL}/refresh`) {
+        localStorage.removeItem('token');
+        await router.push('/auth');
     }
     throw error;
 });

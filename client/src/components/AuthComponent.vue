@@ -102,11 +102,9 @@ export default {
   methods: {
     async submitRegisterForm() {
       let checkedInterests = [];
-      document.querySelectorAll('.block-item input[type="checkbox"]').forEach(function (checkbox) {
-        if (checkbox.checked) {
-          checkedInterests.push(checkbox.value);
-        }
-      });
+      document.querySelectorAll('.block-item input[type="checkbox"]:checked').forEach(checkbox =>
+        checkedInterests.push(checkbox.value)
+      );
       const formData = new FormData(this.$refs.registerForm);
       formData.append('interests', JSON.stringify(checkedInterests));
       const response = await api.authApi.register(formData);

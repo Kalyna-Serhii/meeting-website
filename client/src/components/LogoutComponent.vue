@@ -10,6 +10,7 @@ export default {
     async logout() {
       await api.authApi.logout();
       localStorage.removeItem('isAuth');
+      this.$store.dispatch('logout');
       this.$router.push('/auth');
     },
   },
