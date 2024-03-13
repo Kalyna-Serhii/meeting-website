@@ -7,6 +7,7 @@ const router = express.Router();
 router.get('/received-friend-requests', authMiddleware.onlyAuthorized, friendRequestController.getReceivedFriendRequests);
 router.get('/sent-friend-requests', authMiddleware.onlyAuthorized, friendRequestController.getSentFriendRequests);
 router.post('/send-friend-request', authMiddleware.onlyAuthorized, friendRequestController.sendFriendRequest);
+router.post('/cancel-friend-request', authMiddleware.onlyAuthorized, friendRequestController.cancelFriendRequest);
 router.post('/accept-friend-request', authMiddleware.onlyAuthorized, friendRequestController.acceptFriendRequest);
 router.post('/reject-friend-request', authMiddleware.onlyAuthorized, friendRequestController.rejectFriendRequest);
 router.delete('/delete-from-friends', authMiddleware.onlyAuthorized, friendRequestController.deleteFromFriends);

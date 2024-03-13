@@ -11,16 +11,18 @@ const FriendRequestService = {
         const userData = tokenService.validateAccessToken(token);
         const id = userData.id;
 
-        const requests = await FriendRequestModel.findAll({where: {receiverId: id}})
-        return requests;
+        const requests = await FriendRequestModel.findAll({where: {receiverId: id, status: 'pending'}});
+        let ids = requests.map(request => request.senderId);
+        return ids;
     },
 
     async getSentFriendRequests(token) {
         const userData = tokenService.validateAccessToken(token);
         const id = userData.id;
 
-        const requests = await FriendRequestModel.findAll({where: {senderId: id}})
-        return requests;
+        const requests = await FriendRequestModel.findAll({where: {senderId: id, status: 'pending'}})
+        let ids = requests.map(request => request.receiverId);
+        return ids;
     },
 
     async sendFriendRequest(token, body) {
@@ -62,6 +64,17 @@ const FriendRequestService = {
         }
 
         await FriendRequestModel.create({senderId, receiverId});
+    },
+
+    async cancelFriendRequest(token, body) {
+        const userData = tokenService.validateAccessToken(token);
+        const senderId = userData.id;
+        const {receiverId} = body;
+        const request = await FriendRequestModel.findOne({where: {senderId, receiverId, status: 'pending'}});
+        if (!request) {
+            throw ApiError.BadRequest('No request found');
+        }
+        request.destroy();
     },
 
     async acceptFriendRequest(token, body) {
@@ -108,23 +121,20 @@ const FriendRequestService = {
 
         const request = await FriendRequestModel.findOne({
             where: {
-                senderId, receiverId
+                senderId, receiverId, status: 'pending'
             }
         });
         if (!request) {
             throw ApiError.BadRequest('No request found');
         }
-        if (request.status !== 'pending') {
-            throw ApiError.BadRequest(`Request already accepted or rejected on ${request.data}`);
-        }
 
         await request.update({status: 'rejected'});
     },
 
-    async deleteFromFriends(token, body) {
+    async deleteFromFriends(token, params) {
         const userData = tokenService.validateAccessToken(token);
         const userId = userData.id;
-        const {friendId} = body;
+        const {friendId} = params;
 
         const user = await userModel.findByPk(userId);
         const friend = await userModel.findByPk(friendId);

@@ -5,11 +5,6 @@ const friendRequestApi = {
         try {
             return await $api.get('/received-friend-requests');
         } catch (error) {
-            if (error.response) {
-                alert(`Failed to receive received friend requests: ${error.response.data.message}`);
-            } else {
-                alert(`Failed to receive received friend requests: ${error.message || error}`);
-            }
         }
     },
 
@@ -17,11 +12,6 @@ const friendRequestApi = {
         try {
             return await $api.get('/sent-friend-requests');
         } catch (error) {
-            if (error.response) {
-                alert(`Failed to receive sent friend requests: ${error.response.data.message}`);
-            } else {
-                alert(`Failed to receive sent friend requests: ${error.message || error}`);
-            }
         }
     },
 
@@ -33,6 +23,18 @@ const friendRequestApi = {
                 alert(`Failed to send friend request: ${error.response.data.message}`);
             } else {
                 alert(`Failed to send friend request: ${error.message || error}`);
+            }
+        }
+    },
+
+    async cancelFriendRequest(body) {
+        try {
+            return await $api.post('/cancel-friend-request', body);
+        } catch (error) {
+            if (error.response) {
+                alert(`Failed to cancel friend request: ${error.response.data.message}`);
+            } else {
+                alert(`Failed to cancel friend request: ${error.message || error}`);
             }
         }
     },
@@ -61,9 +63,9 @@ const friendRequestApi = {
         }
     },
 
-    async deleteFromFriends(body) {
+    async deleteFromFriends(options) {
         try {
-            return await $api.delete('/delete-from-friends', body);
+            return await $api.delete('/delete-from-friends', options);
         } catch (error) {
             if (error.response) {
                 alert(`Failed to delete from friends: ${error.response.data.message}`);

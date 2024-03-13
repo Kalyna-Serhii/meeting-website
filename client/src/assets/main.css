@@ -87,6 +87,17 @@ header .avatar {
     height: 50px;
     border-radius: 50%;
 }
+.avatar-container {
+    position: relative;
+    display: inline-block;
+}
+.avatar-container .badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: white;
+    color: red;
+}
 
 /* Content */
 .content {

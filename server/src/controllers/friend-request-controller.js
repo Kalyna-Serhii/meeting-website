@@ -28,6 +28,15 @@ const FriendRequestController = {
         }
     },
 
+    async cancelFriendRequest(req, res, next) {
+        try {
+            await friendRequestService.cancelFriendRequest(req.cookies.accessToken, req.body);
+            return res.status(204).send();
+        } catch (error) {
+            next(error);
+        }
+    },
+
     async acceptFriendRequest(req, res, next) {
         try {
             await friendRequestService.acceptFriendRequest(req.cookies.accessToken, req.body);
@@ -48,7 +57,7 @@ const FriendRequestController = {
 
     async deleteFromFriends(req, res, next) {
         try {
-            await friendRequestService.deleteFromFriends(req.cookies.accessToken, req.body);
+            await friendRequestService.deleteFromFriends(req.cookies.accessToken, req.query);
             return res.status(204).send();
         } catch (error) {
             next(error);

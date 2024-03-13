@@ -3,7 +3,7 @@
     <div class="content-title">Questionnaires</div>
     <div class="content-cards" v-if="users.length > 0">
       <div class="card" v-for="(user, index) in users" :key="index">
-        <router-link :to="/users/ + user.id">
+        <router-link :to="/user/ + user.id">
           <img v-if="user.photoLink" :src="serverURL + /photos/ + user.photoLink" alt="User photo" class="card-img">
         </router-link>
         <div class="card-content">
@@ -20,13 +20,26 @@
           </div>
         </div>
         <div class="card-button">
-          Send request
+          <p>{{ friendRequestsKey }}</p>
+          <p v-if="$store.state.currentUser?.friends.includes(user.id)"
+          @click="deleteFromFriends(user.id)">Delete from friends</p>
+          <div
+              v-else-if="$store.state?.senders && $store.state?.senders.includes(user.id)">
+            <p @click="acceptFriendRequest(user.id)">Accept</p>
+            <hr>
+            <p @click="rejectFriendRequest(user.id)">Reject</p>
+          </div>
+          <p v-else-if="$store.state?.receivers && $store.state?.receivers.includes(user.id)"
+             @click="cancelFriendRequest(user.id)">
+            Cancel
+          </p>
+          <p v-else @click="sendFriendRequest(user.id)">Add to friends</p>
         </div>
       </div>
     </div>
 
     <div class="content-title" v-else>
-        No questionnaires found
+      No questionnaires found
     </div>
   </div>
 
@@ -62,7 +75,7 @@
       <div class="block">
         <div v-for="(interest, index) in interests" :key="index" class="block-item">
           <input type="checkbox" :name="interest" :value="interest">
-          <label :for="interest">{{interest}}</label>
+          <label :for="interest">{{ interest }}</label>
         </div>
       </div>
       <div class="block block-button">
@@ -100,11 +113,9 @@ export default {
     },
     async submitForm() {
       let checkedInterests = [];
-      document.querySelectorAll('.block-item input[type="checkbox"]').forEach(function(checkbox) {
-        if (checkbox.checked) {
-          checkedInterests.push(checkbox.value);
-        }
-      });
+      document.querySelectorAll('.block-item input[type="checkbox"]:checked').forEach(checkbox =>
+          checkedInterests.push(checkbox.value)
+      );
       const options = {
         params: {
           gender: this.filter.gender,
@@ -114,6 +125,42 @@ export default {
         }
       };
       this.users = await api.userApi.getUsers(options);
+    },
+    async sendFriendRequest(receiverId) {
+      const response = await api.friendRequestApi.sendFriendRequest({receiverId});
+      if (response && response.status===204) {
+        this.$store.commit('setSentFriendRequests', [...this.$store.state.receivers, receiverId]);
+      }
+    },
+    async cancelFriendRequest(receiverId) {
+      const response = await api.friendRequestApi.cancelFriendRequest({receiverId});
+      if (response && response.status===204) {
+        this.$store.commit('setSentFriendRequests', this.$store.state.receivers.filter(id => id !== receiverId));
+      }
+    },
+    async acceptFriendRequest(senderId) {
+      const response = await api.friendRequestApi.acceptFriendRequest({senderId});
+      if (response && response.status===204) {
+        this.$store.commit('setReceivedFriendRequests', this.$store.state.senders.filter(id => id !== senderId));
+        this.$store.commit('setCurrentUser', {...this.$store.state.currentUser, friends: [...this.$store.state.currentUser.friends, senderId]});
+      }
+    },
+    async rejectFriendRequest(senderId) {
+      const response = await api.friendRequestApi.rejectFriendRequest({senderId});
+      if (response && response.status===204) {
+        this.$store.commit('setReceivedFriendRequests', this.$store.state.senders.filter(id => id !== senderId));
+      }
+    },
+    async deleteFromFriends(friendId) {
+      const options = {
+        params: {
+          friendId,
+        }
+      };
+      const response = await api.friendRequestApi.deleteFromFriends(options);
+      if (response && response.status===204) {
+        this.$store.commit('setCurrentUser', {...this.$store.state.currentUser, friends: this.$store.state.currentUser.friends.filter(id => id !== friendId)});
+      }
     },
   },
   async mounted() {
