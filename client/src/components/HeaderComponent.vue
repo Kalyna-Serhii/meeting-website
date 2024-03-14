@@ -8,7 +8,7 @@
       <router-link to="/logout">Logout</router-link>
       <router-link to="/profile" class="avatar-container">
         <img :src="serverURL + /photos/ + $store.state.currentUser?.photoLink" alt="avatar" class="avatar">
-        <span v-if="$store.state.senders.length>0" class="badge">
+        <span v-if="$store.state?.senders && $store.state?.senders.length>0" class="badge">
           {{ $store.state.senders.length }}
         </span>
       </router-link>

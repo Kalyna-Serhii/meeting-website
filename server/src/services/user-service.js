@@ -6,6 +6,7 @@ import photoService from "./photo-service.js";
 import {Op} from "sequelize";
 import InterestModel from "../models/interest-model.js";
 import UserInterestModel from "../models/user-interest-model.js";
+import bcrypt from "bcrypt";
 
 const UserService = {
     async getUsers(token, params) {
@@ -137,7 +138,7 @@ const UserService = {
     },
 
     async updateUser(token, body, photo) {
-        const {name, gender, age, phone, interests} = body;
+        const {name, gender, age, phone, newPassword, interests} = body;
         const interestsArray = JSON.parse(interests)
 
         const userData = tokenService.validateAccessToken(token);
@@ -151,11 +152,14 @@ const UserService = {
             throw ApiError.BadRequest(`User with ${phone} phone number already exists`);
         }
 
+        const hashedPassword = await bcrypt.hash(newPassword, 3);
+
         const updatedFields = {};
         updatedFields.name = name;
         updatedFields.gender = gender;
         updatedFields.age = age;
         updatedFields.phone = phone;
+        updatedFields.password = hashedPassword;
 
         if (photo) {
             updatedFields.photoLink = photo.filename;

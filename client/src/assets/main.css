@@ -259,10 +259,17 @@ button {
 }
 
 /* Register Form */
-#register-form {
+#register-form,
+#profile-form {
     display: grid;
     gap: 10%;
     grid-template-columns: 2fr 1fr;
-    /*grid-template-rows: repeat(4, auto);*/
-    /*padding: 10px;*/
+}
+
+/* Profile */
+.profile .avatar {
+    height: 100px;
+}
+.profile .grey-avatar {
+    filter: grayscale(100%);
 }
