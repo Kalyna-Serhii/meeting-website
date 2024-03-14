@@ -47,7 +47,7 @@ export default {
     },
   },
   async mounted() {
-    await this.getUser();
+    this.getUser();
     await this.getFriendsRequests();
   },
 };

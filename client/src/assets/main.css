@@ -83,7 +83,8 @@ header .auth {
     margin-left: auto;
 }
 
-header .avatar {
+header .avatar,
+.sidebar .avatar {
     height: 50px;
     border-radius: 50%;
 }

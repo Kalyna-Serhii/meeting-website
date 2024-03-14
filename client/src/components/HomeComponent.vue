@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <div class="content-title">Questionnaires</div>
-    <div class="content-cards" v-if="users.length > 0">
+    <div class="content-cards" v-if="users && users.length > 0">
       <div class="card" v-for="(user, index) in users" :key="index">
         <router-link :to="/user/ + user.id">
           <img v-if="user.photoLink" :src="serverURL + /photos/ + user.photoLink" alt="User photo" class="card-img">
@@ -20,7 +20,6 @@
           </div>
         </div>
         <div class="card-button">
-          <p>{{ friendRequestsKey }}</p>
           <p v-if="$store.state.currentUser?.friends.includes(user.id)"
           @click="deleteFromFriends(user.id)">Delete from friends</p>
           <div

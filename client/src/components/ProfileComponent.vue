@@ -79,6 +79,24 @@
       </div>
     </form>
   </div>
+
+  <div class="sidebar">
+    <div class="content-title">Received friend requests</div>
+    <div class="block-flex" v-if="usersData.length > 0">
+      <div class="block-item" v-for="(user, index) in usersData" :key="index">
+        <img :src="serverURL + /photos/ + user.photoLink" alt="avatar" class="avatar">
+        <p>{{ user.name }}</p>
+        <div class="card-button">
+          <p @click="acceptFriendRequest(user.id)">Accept</p>
+          <hr>
+          <p @click="rejectFriendRequest(user.id)">Reject</p>
+        </div>
+      </div>
+    </div>
+    <div v-else class="block-flex">
+      No friend requests
+    </div>
+  </div>
 </template>
 <script>
 import api from "../api";
@@ -97,11 +115,11 @@ export default {
         age: null,
         phone: null,
         interests: null,
-        friends: null,
       },
       interests: ['sport', 'music', 'cinema', 'books', 'travel', 'games', 'cooking', 'art', 'theatre', 'fashion',
         'photography', 'cars', 'animals', 'nature', 'science', 'technology', 'politics', 'psychology', 'history',
         'religion', 'philosophy'],
+      usersData: [],
     };
   },
   methods: {
@@ -113,7 +131,6 @@ export default {
       this.formData.age = user.age;
       this.formData.phone = user.phone;
       this.formData.interests = user.interests;
-      this.formData.friends = user.friends;
     },
     fileAdded() {
       this.formData.newPhoto = true;
@@ -130,10 +147,36 @@ export default {
         this.$router.push('/');
       }
     },
+    async getUsersData() {
+      const usersIds = this.$store.state.senders;
+      for (const userId of usersIds) {
+        const user = await api.userApi.getUserById(userId);
+        this.usersData.push(user);
+      }
+    },
+    async acceptFriendRequest(senderId) {
+      const response = await api.friendRequestApi.acceptFriendRequest({senderId});
+      if (response && response.status === 204) {
+        this.$store.commit('setReceivedFriendRequests', this.$store.state.senders.filter(id => id !== senderId));
+        this.$store.commit('setCurrentUser', {
+          ...this.$store.state.currentUser,
+          friends: [...this.$store.state.currentUser.friends, senderId]
+        });
+        this.usersData = this.usersData.filter(user => user.id !== senderId);
+      }
+    },
+    async rejectFriendRequest(senderId) {
+      const response = await api.friendRequestApi.rejectFriendRequest({senderId});
+      if (response && response.status === 204) {
+        this.$store.commit('setReceivedFriendRequests', this.$store.state.senders.filter(id => id !== senderId));
+        this.usersData = this.usersData.filter(user => user.id !== senderId);
+      }
+    },
   },
   async mounted() {
     await this.getUser();
     initInputMask(this.$refs.phone);
+    await this.getUsersData();
   },
 };
 </script>
