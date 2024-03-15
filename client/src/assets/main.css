@@ -185,7 +185,7 @@ header .avatar,
     width: 100%;
 }
 .sidebar-list * + * {
-    border-top: 0.5px solid var(--invert_secondary);
+    border-top: 1px solid var(--invert_secondary);
     margin-top: 4px;
     padding-top: 4px;
 }
@@ -238,6 +238,12 @@ footer li {
     height: 100%;
     padding: 10px;
 }
+.block-2-button button {
+    width: 40%;
+    height: 100%;
+    padding: 10px;
+    margin: 0 10px;
+}
 .block-title {
     font-weight: 500;
     font-size: 16px;
@@ -248,20 +254,21 @@ footer li {
     flex-grow: 1;
     padding: 5px;
     outline: none;
-    border: 0.5px solid var(--invert_secondary);
+    border: 1px solid var(--invert_secondary);
     border-radius: var(--button_radius);
 }
 button {
     cursor: pointer;
     background: var(--bg_gradient);
     color: var(--primary);
-    border: 0.5px solid var(--invert_secondary);
+    border: 1px solid var(--invert_secondary);
     border-radius: var(--button_radius);
 }
 
 /* Register Form */
 #register-form,
-#profile-form {
+#profile-form,
+#user-form {
     display: grid;
     gap: 10%;
     grid-template-columns: 2fr 1fr;
@@ -273,4 +280,7 @@ button {
 }
 .profile .grey-avatar {
     filter: grayscale(100%);
+}
+.disabled-checkbox {
+    pointer-events: none;
 }

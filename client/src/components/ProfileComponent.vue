@@ -23,7 +23,7 @@
         <div class="block-title">Age</div>
         <div class="block">
           <div class="block-item">
-            <input type="number" name="age" v-model="formData.age" required>
+            <input type="number" name="age" min="1" max="99" v-model="formData.age" required>
           </div>
         </div>
         <div class="block-title">Phone</div>
