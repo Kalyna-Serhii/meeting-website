@@ -106,7 +106,9 @@ export default {
         this.$store.commit('setCurrentUser', {
           ...this.$store.state.currentUser,
           friends: [...this.$store.state.currentUser.friends, senderId]
+
         });
+        await this.getUser();
       }
     },
     async rejectFriendRequest(senderId) {
@@ -127,6 +129,7 @@ export default {
           ...this.$store.state.currentUser,
           friends: this.$store.state.currentUser.friends.filter(id => id !== friendId)
         });
+        this.user.phone = 'hidden';
       }
     },
   },

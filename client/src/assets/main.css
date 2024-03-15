@@ -28,7 +28,6 @@ body {
     font-family: 'Rubik', sans-serif;
     min-height: 100vh;
     grid-template-rows: auto 1fr;
-    padding-bottom: 10px;
 }
 
 /* Layout */
@@ -41,6 +40,7 @@ body {
     grid-template-rows: 100px 1fr minmax(100px, auto);
     grid-auto-rows: 50px;
     gap: 10px;
+    min-height: 100vh;
 }
 
 .component > * {
@@ -168,7 +168,7 @@ header .avatar,
     cursor: pointer;
     display: inline-block;
     padding: 7px 25px;
-    margin: 10px auto 15px;
+    margin: 10px auto 0;
     background: var(--bg_gradient);
     color: var(--primary);
     border-radius: var(--button_radius);
@@ -277,9 +277,6 @@ button {
 /* Profile */
 .profile .avatar {
     height: 100px;
-}
-.profile .grey-avatar {
-    filter: grayscale(100%);
 }
 .disabled-checkbox {
     pointer-events: none;

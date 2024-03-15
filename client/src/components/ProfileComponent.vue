@@ -39,12 +39,6 @@
           </div>
         </div>
         <div class="block-title">Avatar</div>
-        <div class="block-flex">
-          <div class="block-item">
-            <img v-if="!formData.newPhoto" :src="serverURL + /photos/ + formData.photoLink" alt="avatar" class="avatar">
-            <img v-else :src="serverURL + /photos/ + formData.photoLink" alt="avatar" class="avatar grey-avatar">
-          </div>
-        </div>
         <label v-if="!formData.newPhoto" class="block-flex" for="newPhoto">
           Press to choose new avatar
         </label>
