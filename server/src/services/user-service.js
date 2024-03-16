@@ -1,50 +1,56 @@
-import ApiError from "../exceptions/api-error.js";
 import UserModel from "../models/user-model.js";
-import UserFriendModel from "../models/user-friend-model.js";
-import tokenService from "./token-service.js";
-import photoService from "./photo-service.js";
-import {Op} from "sequelize";
 import InterestModel from "../models/interest-model.js";
 import UserInterestModel from "../models/user-interest-model.js";
+import UserFriendModel from "../models/user-friend-model.js";
+import {Op} from "sequelize";
+import tokenService from "./token-service.js";
+import photoService from "./photo-service.js";
 import bcrypt from "bcrypt";
+import ApiError from "../exceptions/api-error.js";
 
 const UserService = {
     async getUsers(token, params) {
         const userData = tokenService.validateAccessToken(token);
         const userId = userData.id;
 
-        const {gender, minAge = 0, maxAge = 100, interests} = params;
+        const {gender, minAge = 0, maxAge = 100, interests, pageNumber = 1, pageSize = 100} = params;
 
         const genderFilter = gender && gender !== 'all' ? {gender} : {};
         const ageFilter = minAge || maxAge ? {age: {[Op.between]: [minAge, maxAge]}} : {};
+        const offset = (pageNumber - 1) * pageSize;
 
-        let users = await UserModel.findAll({
+        let interestsFilter = {};
+        if (interests) {
+            let interestsIds = [];
+            interestsIds = await InterestModel.findAll({
+                where: {name: {[Op.in]: interests}}
+            });
+            interestsIds = interestsIds.map(interest => interest.id);
+
+            interestsFilter = interests ? {
+                include: [
+                    {
+                        model: InterestModel,
+                        as: 'Interests',
+                        through: {attributes: []},
+                        where: {id: {[Op.in]: interestsIds}},
+                        attributes: ['id'],
+                        required: true,
+                    },
+                ]
+            } : {};
+        }
+
+        const users = await UserModel.findAll({
+            ...interestsFilter,
             where: {
                 id: {[Op.not]: userId},
                 ...genderFilter,
                 ...ageFilter,
-            }
+            },
+            offset,
+            limit: pageSize,
         });
-
-        if (interests) {
-            let filteredUsers = [];
-            for (const userFromArray of users) {
-                const userFromArrayInterestsIds = await UserInterestModel.findAll({
-                    where: {UserId: userFromArray.id},
-                });
-
-                let userFromArrayInterests = [];
-                for (const interest of userFromArrayInterestsIds) {
-                    const interestName = await InterestModel.findByPk(interest.InterestId);
-                    userFromArrayInterests.push(interestName.name);
-                }
-
-                if (interests.every(interest => userFromArrayInterests.includes(interest))) {
-                    filteredUsers.push(userFromArray);
-                }
-            }
-            users = filteredUsers;
-        }
 
         const friends = await UserFriendModel.findAll({
             where: {
@@ -60,6 +66,7 @@ const UserService = {
                 userFriendsIds.push(friendsRow.user1Id)
             }
         });
+
         users.forEach(userFromArray => {
             if (!userFriendsIds.includes(userFromArray.id)) {
                 userFromArray.phone = 'hidden';

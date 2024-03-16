@@ -1,5 +1,4 @@
-import {DataTypes} from 'sequelize';
-import {sequelize} from '../database/database.config.js';
+import {sequelize, DataTypes} from '../database/database.config.js';
 import UserModel from "./user-model.js";
 
 const FriendRequestModel = sequelize.define(
