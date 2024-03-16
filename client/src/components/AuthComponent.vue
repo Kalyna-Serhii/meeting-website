@@ -55,9 +55,7 @@
           </div>
         </div>
         <div class="block block-button">
-          <div class="block-item">
-            <button type="submit">Register</button>
-          </div>
+          <button type="submit">Register</button>
         </div>
       </div>
     </form>
@@ -79,9 +77,7 @@
         </div>
       </div>
       <div class="block block-button">
-        <div class="block-item">
-          <button type="submit">Login</button>
-        </div>
+        <button type="submit">Login</button>
       </div>
     </form>
   </div>
@@ -103,7 +99,7 @@ export default {
     async submitRegisterForm() {
       let checkedInterests = [];
       document.querySelectorAll('.block-item input[type="checkbox"]:checked').forEach(checkbox =>
-        checkedInterests.push(checkbox.value)
+          checkedInterests.push(checkbox.value)
       );
       const formData = new FormData(this.$refs.registerForm);
       formData.append('interests', JSON.stringify(checkedInterests));

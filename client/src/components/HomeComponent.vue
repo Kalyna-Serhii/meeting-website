@@ -16,7 +16,7 @@
             {{ user.gender }}
           </div>
           <div class="card-age">
-            {{ user.age }}
+            {{ user.age }} y.o.
           </div>
         </div>
         <div class="card-button">
@@ -30,7 +30,7 @@
           </div>
           <p v-else-if="$store.state?.receivers && $store.state?.receivers.includes(user.id)"
              @click="cancelFriendRequest(user.id)">
-            Cancel
+            Cancel request
           </p>
           <p v-else @click="sendFriendRequest(user.id)">Add to friends</p>
         </div>
@@ -44,7 +44,7 @@
     <div class="pagination">
       <button @click="pageNumber = 1; getUsers()" :disabled="pageNumber === 1" class="card-button">First</button>
       <button @click="pageNumber -= 1; getUsers()" :disabled="pageNumber === 1" class="card-button">Previous</button>
-      <button @click="pageNumber += 1; getUsers()" :disabled="users.length < pageSize" class="card-button">Next</button>
+      <button @click="pageNumber += 1; getUsers()" :disabled="pageNumber * pageSize >= totalCount" class="card-button">Next</button>
     </div>
 
   </div>
@@ -85,9 +85,7 @@
         </div>
       </div>
       <div class="block block-button">
-        <div class="block-item">
           <button type="submit">Search</button>
-        </div>
       </div>
     </form>
   </div>
@@ -113,6 +111,7 @@ export default {
       },
       pageNumber: 1,
       pageSize: 8,
+      totalCount: 0,
     };
   },
   methods: {
@@ -132,7 +131,10 @@ export default {
           pageSize: this.pageSize,
         }
       };
-      this.users = await api.userApi.getUsers(options);
+      const response = await api.userApi.getUsers(options);
+      this.users = response.users;
+      this.totalCount = response.totalCount;
+      window.scrollTo(0, 0);
     },
     async sendFriendRequest(receiverId) {
       const response = await api.friendRequestApi.sendFriendRequest({receiverId});

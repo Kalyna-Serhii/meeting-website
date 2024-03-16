@@ -66,9 +66,11 @@
           </div>
         </div>
         <div class="block block-button">
-          <div class="block-item">
-            <button type="submit">Save</button>
-          </div>
+          <button type="submit">Save</button>
+        </div>
+        <div class="block block-button tooltip-container">
+          <button class="red-button" @click.prevent="deleteUser(formData.id)">Delete account</button>
+          <span class="tooltip-text">Are you sure?</span>
         </div>
       </div>
     </form>
@@ -76,9 +78,11 @@
 
   <div class="sidebar">
     <div class="content-title">Received friend requests</div>
-    <div class="block-flex" v-if="usersData.length > 0">
-      <div class="block-item" v-for="(user, index) in usersData" :key="index">
-        <img :src="serverURL + /photos/ + user.photoLink" alt="avatar" class="avatar">
+    <div class="block" v-if="usersData.length > 0">
+      <div class="block-item-flex" v-for="(user, index) in usersData" :key="index">
+        <router-link :to="/user/ + user.id">
+          <img :src="serverURL + /photos/ + user.photoLink" alt="avatar" class="avatar">
+        </router-link>
         <p>{{ user.name }}</p>
         <div class="card-button">
           <p @click="acceptFriendRequest(user.id)">Accept</p>
@@ -102,6 +106,7 @@ export default {
     return {
       serverURL,
       formData: {
+        id: null,
         photoLink: null,
         newPhoto: null,
         name: null,
@@ -119,6 +124,7 @@ export default {
   methods: {
     async getUser() {
       const user = await api.userApi.getUserByToken();
+      this.formData.id = user.id;
       this.formData.photoLink = user.photoLink;
       this.formData.name = user.name;
       this.formData.gender = user.gender;
@@ -166,6 +172,14 @@ export default {
         this.usersData = this.usersData.filter(user => user.id !== senderId);
       }
     },
+    async deleteUser(userId) {
+      const response = await api.userApi.deleteUser({userId});
+      if (response && response.status === 204) {
+        localStorage.removeItem('isAuth');
+        this.$store.dispatch('logout');
+        this.$router.push('/auth');
+      }
+    }
   },
   async mounted() {
     await this.getUser();
