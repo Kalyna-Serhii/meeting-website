@@ -112,7 +112,7 @@ export default {
         interests: [],
       },
       pageNumber: 1,
-      pageSize: 6,
+      pageSize: 8,
     };
   },
   methods: {
@@ -121,6 +121,7 @@ export default {
       document.querySelectorAll('.block-item input[type="checkbox"]:checked').forEach(checkbox =>
           checkedInterests.push(checkbox.value)
       );
+      this.calculatePageSize();
       const options = {
         params: {
           gender: this.filter.gender,
@@ -173,6 +174,16 @@ export default {
           ...this.$store.state.currentUser,
           friends: this.$store.state.currentUser.friends.filter(id => id !== friendId)
         });
+      }
+    },
+    calculatePageSize() {
+      const screenWidth = window.innerWidth;
+      if (screenWidth < 980) {
+        this.pageSize = 4;
+      } else if (screenWidth < 1190) {
+        this.pageSize = 6;
+      } else {
+        this.pageSize = 8;
       }
     },
   },

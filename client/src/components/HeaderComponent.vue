@@ -16,7 +16,6 @@
     <nav v-else class="auth">
       <router-link to="/auth">Auth</router-link>
     </nav>
-    <i class="fa-solid fa-bars mobile-menu"></i>
   </header>
 </template>
 

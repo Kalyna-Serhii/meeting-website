@@ -17,6 +17,7 @@
     margin: 0;
     box-sizing: border-box;
 }
+
 a {
     text-decoration: none;
     color: var(--primary);
@@ -34,7 +35,6 @@ body {
 .component {
     width: 100vw;
     max-width: 1200px;
-    padding: 0 15px;
     display: grid;
     grid-template-columns: 1fr 330px;
     grid-template-rows: 90px 1fr minmax(67px, auto);
@@ -88,10 +88,12 @@ header .avatar,
     height: 50px;
     border-radius: 50%;
 }
+
 .avatar-container {
     position: relative;
     display: inline-block;
 }
+
 .avatar-container .badge {
     position: absolute;
     top: 0;
@@ -176,12 +178,14 @@ header .avatar,
     border-radius: var(--button_radius);
     font-size: 15px;
 }
+
 .pagination {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 10px;
 }
+
 .pagination button {
     margin: 10px 5px 0 5px;
 
@@ -193,9 +197,11 @@ header .avatar,
     justify-items: start;
     justify-content: start;
 }
+
 .sidebar-list {
     width: 100%;
 }
+
 .sidebar-list * + * {
     border-top: 1px solid var(--invert_secondary);
     margin-top: 4px;
@@ -210,12 +216,20 @@ footer {
     justify-content: center;
     font-size: 14px;
 }
+
 footer ul {
+    justify-content: space-around;
+    align-items: center;
     list-style: none;
     display: flex;
+    padding: 0;
+    width: 70%;
 }
+
 footer li {
-    margin-right: 25%;
+    margin-right: 5%;
+    justify-content: center;
+    align-items: center;
     font-size: 15px;
 }
 
@@ -223,10 +237,12 @@ footer li {
 .block {
     display: block;
 }
+
 .block-flex {
     display: flex;
     align-items: center;
 }
+
 .block,
 .block-flex {
     justify-content: space-around;
@@ -239,28 +255,34 @@ footer li {
     padding: 8px;
     border-radius: var(--radius);
 }
+
 .block-item input {
     margin: 0 5px;
 }
+
 .block-button {
     height: 55px;
 }
+
 .block-button button {
     width: 100%;
     height: 100%;
     padding: 10px;
 }
+
 .block-2-button button {
     width: 40%;
     height: 100%;
     padding: 10px;
     margin: 0 10px;
 }
+
 .block-title {
     font-weight: 500;
     font-size: 16px;
     margin-bottom: 10px;
 }
+
 .block-input {
     width: 100%;
     flex-grow: 1;
@@ -269,6 +291,7 @@ footer li {
     border: 1px solid var(--invert_secondary);
     border-radius: var(--button_radius);
 }
+
 button {
     cursor: pointer;
     background: var(--bg_gradient);
@@ -290,6 +313,90 @@ button {
 .profile .avatar {
     height: 100px;
 }
+
 .disabled-checkbox {
     pointer-events: none;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    .title {
+        font-size: 4.5vw;
+    }
+
+    .component {
+        max-width: 480px;
+        grid-template-rows: 70px 1fr minmax(100px, auto);
+        gap: 2px;
+    }
+
+    header {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        border-bottom: 1px solid var(--primary);
+    }
+
+    header .auth {
+        margin-left: auto;
+    }
+
+    .sidebar {
+        grid-column: span 2;
+    }
+
+    .content {
+        grid-column: span 2;
+    }
+
+    .card-img {
+        min-height: 130px;
+    }
+}
+
+@media (max-width: 480px) {
+    .title {
+        font-size: 5vw;
+    }
+
+    .component {
+        width: 96vw;
+        grid-template-columns: 1fr;
+        grid-template-rows: 50px 1fr minmax(100px, auto);
+    }
+
+    .sidebar {
+        grid-column: span 2;
+    }
+
+    .content {
+        grid-column: span 2;
+    }
+
+    .card-img {
+        height: 30vw;
+    }
+}
+
+@media (max-width: 448px) {
+    header .avatar {
+        height: 30px;
+    }
+
+    .content-cards {
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    }
+
+    .card-img {
+        height: 50vw;
+    }
+
+    footer ul {
+        width: 100%;
+    }
+
+    #register-form,
+    #profile-form {
+        display: block;
+    }
 }
