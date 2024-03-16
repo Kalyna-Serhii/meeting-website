@@ -21,7 +21,7 @@
         </div>
         <div class="card-button">
           <p v-if="$store.state.currentUser?.friends.includes(user.id)"
-          @click="deleteFromFriends(user.id)">Delete from friends</p>
+             @click="deleteFromFriends(user.id)">Delete from friends</p>
           <div
               v-else-if="$store.state?.senders && $store.state?.senders.includes(user.id)">
             <p @click="acceptFriendRequest(user.id)">Accept</p>
@@ -40,10 +40,17 @@
     <div class="content-title" v-else>
       No questionnaires found
     </div>
+
+    <div class="pagination">
+      <button @click="pageNumber = 1; getUsers()" :disabled="pageNumber === 1" class="card-button">First</button>
+      <button @click="pageNumber -= 1; getUsers()" :disabled="pageNumber === 1" class="card-button">Previous</button>
+      <button @click="pageNumber += 1; getUsers()" :disabled="users.length < pageSize" class="card-button">Next</button>
+    </div>
+
   </div>
 
   <div class="sidebar">
-    <form ref="form" @submit.prevent="submitForm">
+    <form ref="form" @submit.prevent="getUsers">
       <div class="block-title">Gender</div>
       <div class="block-flex">
         <div class="block-item">
@@ -104,13 +111,12 @@ export default {
         maxAge: null,
         interests: [],
       },
+      pageNumber: 1,
+      pageSize: 6,
     };
   },
   methods: {
     async getUsers() {
-      this.users = await api.userApi.getUsers();
-    },
-    async submitForm() {
       let checkedInterests = [];
       document.querySelectorAll('.block-item input[type="checkbox"]:checked').forEach(checkbox =>
           checkedInterests.push(checkbox.value)
@@ -121,32 +127,37 @@ export default {
           minAge: this.filter.minAge,
           maxAge: this.filter.maxAge,
           interests: checkedInterests,
+          pageNumber: this.pageNumber,
+          pageSize: this.pageSize,
         }
       };
       this.users = await api.userApi.getUsers(options);
     },
     async sendFriendRequest(receiverId) {
       const response = await api.friendRequestApi.sendFriendRequest({receiverId});
-      if (response && response.status===204) {
+      if (response && response.status === 204) {
         this.$store.commit('setSentFriendRequests', [...this.$store.state.receivers, receiverId]);
       }
     },
     async cancelFriendRequest(receiverId) {
       const response = await api.friendRequestApi.cancelFriendRequest({receiverId});
-      if (response && response.status===204) {
+      if (response && response.status === 204) {
         this.$store.commit('setSentFriendRequests', this.$store.state.receivers.filter(id => id !== receiverId));
       }
     },
     async acceptFriendRequest(senderId) {
       const response = await api.friendRequestApi.acceptFriendRequest({senderId});
-      if (response && response.status===204) {
+      if (response && response.status === 204) {
         this.$store.commit('setReceivedFriendRequests', this.$store.state.senders.filter(id => id !== senderId));
-        this.$store.commit('setCurrentUser', {...this.$store.state.currentUser, friends: [...this.$store.state.currentUser.friends, senderId]});
+        this.$store.commit('setCurrentUser', {
+          ...this.$store.state.currentUser,
+          friends: [...this.$store.state.currentUser.friends, senderId]
+        });
       }
     },
     async rejectFriendRequest(senderId) {
       const response = await api.friendRequestApi.rejectFriendRequest({senderId});
-      if (response && response.status===204) {
+      if (response && response.status === 204) {
         this.$store.commit('setReceivedFriendRequests', this.$store.state.senders.filter(id => id !== senderId));
       }
     },
@@ -157,8 +168,11 @@ export default {
         }
       };
       const response = await api.friendRequestApi.deleteFromFriends(options);
-      if (response && response.status===204) {
-        this.$store.commit('setCurrentUser', {...this.$store.state.currentUser, friends: this.$store.state.currentUser.friends.filter(id => id !== friendId)});
+      if (response && response.status === 204) {
+        this.$store.commit('setCurrentUser', {
+          ...this.$store.state.currentUser,
+          friends: this.$store.state.currentUser.friends.filter(id => id !== friendId)
+        });
       }
     },
   },

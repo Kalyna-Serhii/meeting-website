@@ -37,7 +37,7 @@ body {
     padding: 0 15px;
     display: grid;
     grid-template-columns: 1fr 330px;
-    grid-template-rows: 100px 1fr minmax(100px, auto);
+    grid-template-rows: 90px 1fr minmax(67px, auto);
     grid-auto-rows: 50px;
     gap: 10px;
     min-height: 100vh;
@@ -116,11 +116,13 @@ header .avatar,
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 10px;
+    min-height: 650px;
 }
 
 .card {
     padding: 5px;
     max-width: 300px;
+    max-height: 320px;
     color: var(--invert_primary);
     background: var(--invert_bg);
     font-weight: 300;
@@ -133,7 +135,7 @@ header .avatar,
     border-radius: var(--radius);
     height: 20vw;
     min-height: 150px;
-    max-height: 250px;
+    max-height: 205px;
 }
 
 .card-content {
@@ -173,6 +175,16 @@ header .avatar,
     color: var(--primary);
     border-radius: var(--button_radius);
     font-size: 15px;
+}
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+.pagination button {
+    margin: 10px 5px 0 5px;
+
 }
 
 /* Sidebar */
@@ -261,7 +273,7 @@ button {
     cursor: pointer;
     background: var(--bg_gradient);
     color: var(--primary);
-    border: 1px solid var(--invert_secondary);
+    border: none;
     border-radius: var(--button_radius);
 }
 

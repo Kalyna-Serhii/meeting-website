@@ -4,7 +4,7 @@
     <nav class="menu">
       <router-link to="/">Home</router-link>
     </nav>
-    <nav v-if="isAuth" class="auth">
+    <nav v-if="isAuth && $store.state.currentUser?.photoLink" class="auth">
       <router-link to="/logout">Logout</router-link>
       <router-link to="/profile" class="avatar-container">
         <img :src="serverURL + /photos/ + $store.state.currentUser?.photoLink" alt="avatar" class="avatar">
