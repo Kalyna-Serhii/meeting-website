@@ -26,7 +26,7 @@
               v-else-if="$store.state?.senders && $store.state?.senders.includes(user.id)">
             <p @click="acceptFriendRequest(user.id)">Accept</p>
             <hr>
-            <p @click="rejectFriendRequest(user.id)">Reject</p>
+            <p @click="rejectFriendRequest(user.id)">Reject request</p>
           </div>
           <p v-else-if="$store.state?.receivers && $store.state?.receivers.includes(user.id)"
              @click="cancelFriendRequest(user.id)">
@@ -37,7 +37,7 @@
       </div>
     </div>
 
-    <div class="content-title" v-else>
+    <div class="content-title content-cards" v-else>
       No questionnaires found
     </div>
 
