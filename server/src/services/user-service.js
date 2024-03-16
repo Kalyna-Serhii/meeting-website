@@ -41,7 +41,7 @@ const UserService = {
             } : {};
         }
 
-        const users = await UserModel.findAll({
+        const {rows: users, count: totalCount} = await UserModel.findAndCountAll({
             ...interestsFilter,
             where: {
                 id: {[Op.not]: userId},
@@ -74,7 +74,7 @@ const UserService = {
             delete userFromArray.dataValues.password;
         });
 
-        return users;
+        return {users, totalCount};
     },
 
     async getUserById(token, targetUserId) {
