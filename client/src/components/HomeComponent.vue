@@ -44,7 +44,9 @@
     <div class="pagination">
       <button @click="pageNumber = 1; getUsers()" :disabled="pageNumber === 1" class="card-button">First</button>
       <button @click="pageNumber -= 1; getUsers()" :disabled="pageNumber === 1" class="card-button">Previous</button>
-      <button @click="pageNumber += 1; getUsers()" :disabled="pageNumber * pageSize >= totalCount" class="card-button">Next</button>
+      <button @click="pageNumber += 1; getUsers()" :disabled="pageNumber * pageSize >= totalCount" class="card-button">
+        Next
+      </button>
     </div>
 
   </div>
@@ -85,7 +87,7 @@
         </div>
       </div>
       <div class="block block-button">
-          <button type="submit">Search</button>
+        <button type="submit">Search</button>
       </div>
     </form>
   </div>
@@ -112,6 +114,7 @@ export default {
       pageNumber: 1,
       pageSize: 8,
       totalCount: 0,
+      options: null,
     };
   },
   methods: {
@@ -131,10 +134,20 @@ export default {
           pageSize: this.pageSize,
         }
       };
+      if (this.options &&
+          this.options?.params.gender !== options.params.gender ||
+          this.options?.params.minAge !== options.params.minAge ||
+          this.options?.params.maxAge !== options.params.maxAge ||
+          this.options?.params.interests !== options.params.interests) {
+        this.pageNumber = 1;
+        this.options = options;
+      }
       const response = await api.userApi.getUsers(options);
-      this.users = response.users;
-      this.totalCount = response.totalCount;
-      window.scrollTo(0, 0);
+      if (response) {
+        this.users = response.users;
+        this.totalCount = response.totalCount;
+        window.scrollTo(0, 0);
+      }
     },
     async sendFriendRequest(receiverId) {
       const response = await api.friendRequestApi.sendFriendRequest({receiverId});
