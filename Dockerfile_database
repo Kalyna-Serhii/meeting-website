@@ -1,0 +1,14 @@
+# Используем официальный образ PostgreSQL
+FROM postgres:alpine
+
+# Переменная среды для установки пароля пользователя "postgres"
+ENV POSTGRES_PASSWORD=1234
+
+# Переменная среды для установки имени базы данных
+ENV POSTGRES_DB=meeting-website
+
+# Переменная среды для установки имени пользователя
+ENV POSTGRES_USER=postgres
+
+# Указываем порт, на котором будет работать PostgreSQL
+EXPOSE 5432

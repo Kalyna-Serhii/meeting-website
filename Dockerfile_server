@@ -1,0 +1,26 @@
+# Используем образ Node.js с установленным bash
+FROM node:alpine
+
+# Установка необходимых пакетов, включая bash
+RUN apk add --no-cache bash
+
+# Устанавливаем рабочую директорию для установки зависимостей
+WORKDIR /usr/src/app
+
+# Копируем package.json и package-lock.json (если есть) для установки зависимостей
+COPY server/package*.json ./server/
+
+# Устанавливаем зависимости
+RUN npm install --prefix ./server
+
+# Копируем wait-for-it.sh внутрь контейнера
+COPY server/wait-for-it.sh /usr/local/bin/wait-for-it.sh
+
+# Копируем исходный код приложения
+COPY server/ ./server/
+
+# Указываем порт, на котором будет работать приложение
+EXPOSE 8080
+
+# Команда для запуска сервера Node.js с ожиданием запуска БД
+CMD ["/usr/local/bin/wait-for-it.sh", "database:5432", "--", "sh", "-c", "cd server && node app.js"]

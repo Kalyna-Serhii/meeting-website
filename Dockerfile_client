@@ -1,0 +1,20 @@
+# Используем официальный образ Node.js
+FROM node:alpine
+
+# Устанавливаем рабочую директорию для установки зависимостей и копирования исходного кода
+WORKDIR /usr/src/app
+
+# Копируем файлы package.json и package-lock.json (если есть)
+COPY client/package*.json ./client/
+
+# Устанавливаем зависимости
+RUN npm install --prefix ./client
+
+# Копируем исходный код приложения
+COPY client/ ./client/
+
+# Экспонируем порт, который используется вашим приложением Vue.js
+EXPOSE 8081
+
+# Команда для запуска сервера Vue.js
+CMD cd client && npm start
