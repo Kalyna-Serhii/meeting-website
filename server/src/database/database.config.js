@@ -1,4 +1,5 @@
 import {DataTypes, Sequelize} from 'sequelize';
+import setTestData from "./setTestData.js";
 
 const NAME = process.env.DATABASE_NAME;
 const USERNAME = process.env.DATABASE_USERNAME;
@@ -25,6 +26,10 @@ const sequelize = new Sequelize(NAME, USERNAME, PASSWORD, {
         // Примусово оновлює БД, ФОРМАТУЮЧИ її
     } catch (error) {
         console.error('Не вдалося виконати синхронізацію в базі даних:', error);
+    } try {
+        await setTestData();
+    } catch (error) {
+        console.error('Не вдалося внести тестові дані', error);
     }
 })();
 

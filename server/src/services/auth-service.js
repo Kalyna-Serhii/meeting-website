@@ -23,7 +23,7 @@ const AuthService = {
             age,
             phone,
             password: hashedPassword,
-            photoLink: photo.filename,
+            photoLink: photo.filename || photo,
         });
 
         for (const interest of interestsArray) {
