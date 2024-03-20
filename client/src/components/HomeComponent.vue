@@ -111,6 +111,7 @@ export default {
         maxAge: null,
         interests: [],
       },
+      previousFilter: {},
       pageNumber: 1,
       pageSize: 8,
       totalCount: 0,
@@ -119,29 +120,30 @@ export default {
   },
   methods: {
     async getUsers() {
-      let checkedInterests = [];
+      this.filter.interests = [];
       document.querySelectorAll('.block-item input[type="checkbox"]:checked').forEach(checkbox =>
-          checkedInterests.push(checkbox.value)
+          this.filter.interests.push(checkbox.value)
       );
+
+      if (JSON.stringify(this.previousFilter) !== JSON.stringify(this.filter)) {
+        this.pageNumber = 1;
+        this.previousFilter = {
+          ...this.filter,
+        };
+      }
+
       this.calculatePageSize();
       const options = {
         params: {
           gender: this.filter.gender,
           minAge: this.filter.minAge,
           maxAge: this.filter.maxAge,
-          interests: checkedInterests,
+          interests: this.filter.interests,
           pageNumber: this.pageNumber,
           pageSize: this.pageSize,
         }
       };
-      if (this.options &&
-          this.options?.params.gender !== options.params.gender ||
-          this.options?.params.minAge !== options.params.minAge ||
-          this.options?.params.maxAge !== options.params.maxAge ||
-          this.options?.params.interests !== options.params.interests) {
-        this.pageNumber = 1;
-        this.options = options;
-      }
+
       const response = await api.userApi.getUsers(options);
       if (response) {
         this.users = response.users;
