@@ -35,7 +35,7 @@
         <div class="block-title">New password</div>
         <div class="block">
           <div class="block-item">
-            <input type="password" name="newPassword" required>
+            <input type="password" name="newPassword">
           </div>
         </div>
         <div class="block-title">Avatar</div>
@@ -69,11 +69,23 @@
           <button type="submit">Save</button>
         </div>
         <div class="block block-button tooltip-container">
-          <button class="red-button" @click.prevent="deleteUser(formData.id)">Delete account</button>
-          <span class="tooltip-text">Are you sure?</span>
+          <button class="red-button" @click.prevent="warning = true">Delete account</button>
         </div>
+        <v-dialog v-model="warning" max-width="500">
+          <v-card>
+            <v-card-title>Warning!</v-card-title>
+            <v-card-text>
+              Are you sure? it is irreversible!
+            </v-card-text>
+            <div class="block-flex block-button dialog-button">
+              <button @click="warning = false">NO</button>
+              <button class="red-button" @click="deleteUser(formData.id)">YES</button>
+            </div>
+          </v-card>
+        </v-dialog>
       </div>
     </form>
+    <error-component></error-component>
   </div>
 
   <div class="sidebar">
@@ -100,6 +112,7 @@
 import api from "../api";
 import {serverURL} from "@/api/axiosInstance";
 import initInputMask from '../assets/initInputMask';
+import ErrorComponent from './ErrorComponent.vue'
 
 export default {
   data() {
@@ -119,18 +132,25 @@ export default {
         'photography', 'cars', 'animals', 'nature', 'science', 'technology', 'politics', 'psychology', 'history',
         'religion', 'philosophy'],
       usersData: [],
+      error: false,
+      errorMessage: null,
+      warning: false,
     };
   },
   methods: {
     async getUser() {
-      const user = await api.userApi.getUserByToken();
-      this.formData.id = user.id;
-      this.formData.photoLink = user.photoLink;
-      this.formData.name = user.name;
-      this.formData.gender = user.gender;
-      this.formData.age = user.age;
-      this.formData.phone = user.phone;
-      this.formData.interests = user.interests;
+      try {
+        const user = await api.userApi.getUserByToken();
+        this.formData.id = user.id;
+        this.formData.photoLink = user.photoLink;
+        this.formData.name = user.name;
+        this.formData.gender = user.gender;
+        this.formData.age = user.age;
+        this.formData.phone = user.phone;
+        this.formData.interests = user.interests;
+      } catch (error) {
+        this.$store.commit('setError', error?.response?.data.message);
+      }
     },
     fileAdded() {
       this.formData.newPhoto = true;
@@ -142,42 +162,62 @@ export default {
       );
       const formData = new FormData(this.$refs.form);
       formData.append('interests', JSON.stringify(checkedInterests));
-      const response = await api.userApi.updateUser(formData);
-      if (response && response.status === 200) {
-        this.$router.push('/');
+      try {
+        const response = await api.userApi.updateUser(formData);
+        if (response?.status === 200) {
+          this.$router.push('/');
+        }
+      } catch (error) {
+        this.$store.commit('setError', error?.response?.data.message);
       }
     },
     async getUsersData() {
       const usersIds = this.$store.state.senders;
       for (const userId of usersIds) {
-        const user = await api.userApi.getUserById(userId);
-        this.usersData.push(user);
+        try {
+          const user = await api.userApi.getUserById(userId);
+          this.usersData.push(user);
+        } catch (error) {
+          this.$store.commit('setError', error?.response?.data.message);
+        }
       }
     },
     async acceptFriendRequest(senderId) {
-      const response = await api.friendRequestApi.acceptFriendRequest({senderId});
-      if (response && response.status === 204) {
-        this.$store.commit('setReceivedFriendRequests', this.$store.state.senders.filter(id => id !== senderId));
-        this.$store.commit('setCurrentUser', {
-          ...this.$store.state.currentUser,
-          friends: [...this.$store.state.currentUser.friends, senderId]
-        });
-        this.usersData = this.usersData.filter(user => user.id !== senderId);
+      try {
+        const response = await api.friendRequestApi.acceptFriendRequest({senderId});
+        if (response?.status === 204) {
+          this.$store.commit('setReceivedFriendRequests', this.$store.state.senders.filter(id => id !== senderId));
+          this.$store.commit('setCurrentUser', {
+            ...this.$store.state.currentUser,
+            friends: [...this.$store.state.currentUser.friends, senderId]
+          });
+          this.usersData = this.usersData.filter(user => user.id !== senderId);
+        }
+      } catch (error) {
+        this.$store.commit('setError', error?.response?.data.message);
       }
     },
     async rejectFriendRequest(senderId) {
-      const response = await api.friendRequestApi.rejectFriendRequest({senderId});
-      if (response && response.status === 204) {
-        this.$store.commit('setReceivedFriendRequests', this.$store.state.senders.filter(id => id !== senderId));
-        this.usersData = this.usersData.filter(user => user.id !== senderId);
+      try {
+        const response = await api.friendRequestApi.rejectFriendRequest({senderId});
+        if (response?.status === 204) {
+          this.$store.commit('setReceivedFriendRequests', this.$store.state.senders.filter(id => id !== senderId));
+          this.usersData = this.usersData.filter(user => user.id !== senderId);
+        }
+      } catch (error) {
+        this.$store.commit('setError', error?.response?.data.message);
       }
     },
     async deleteUser(userId) {
-      const response = await api.userApi.deleteUser({userId});
-      if (response && response.status === 204) {
-        localStorage.removeItem('isAuth');
-        this.$store.dispatch('logout');
-        this.$router.push('/auth');
+      try {
+        const response = await api.userApi.deleteUser({userId});
+        if (response?.status === 204) {
+          localStorage.removeItem('isAuth');
+          this.$store.dispatch('logout');
+          this.$router.push('/auth');
+        }
+      } catch (error) {
+        this.$store.commit('setError', error?.response?.data.message);
       }
     }
   },
@@ -185,6 +225,9 @@ export default {
     await this.getUser();
     initInputMask(this.$refs.phone);
     await this.getUsersData();
+  },
+  components: {
+    ErrorComponent
   },
 };
 </script>

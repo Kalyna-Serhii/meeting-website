@@ -159,14 +159,16 @@ const UserService = {
             throw ApiError.BadRequest(`User with ${phone} phone number already exists`);
         }
 
-        const hashedPassword = await bcrypt.hash(newPassword, 3);
-
         const updatedFields = {};
         updatedFields.name = name;
         updatedFields.gender = gender;
         updatedFields.age = age;
         updatedFields.phone = phone;
-        updatedFields.password = hashedPassword;
+
+        if (newPassword) {
+            const hashedPassword = await bcrypt.hash(newPassword, 3);
+            updatedFields.password = hashedPassword;
+        }
 
         if (photo) {
             updatedFields.photoLink = photo.filename;

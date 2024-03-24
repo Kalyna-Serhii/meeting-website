@@ -414,31 +414,6 @@ button {
     }
 }
 
-/* Tooltip */
-.tooltip-container {
-    position: relative;
-    display: inline-block;
-}
-
-.tooltip-container:hover .tooltip-text {
-    visibility: visible;
-    opacity: 1;
-    transition: opacity 0.3s, visibility 0s linear 0s;
-}
-
-.tooltip-text {
-    visibility: hidden;
-    width: 120px;
-    background: var(--bg_red_gradient);
-    color: white;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px;
-    position: absolute;
-    z-index: 1;
-    bottom: 100%;
-    left: 50%;
-    margin-left: -60px;
-    opacity: 0;
-    transition: opacity 0.3s, visibility 0s linear 0.3s;
+.dialog-button {
+    margin: 0 0;
 }

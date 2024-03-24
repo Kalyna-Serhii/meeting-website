@@ -89,19 +89,19 @@ export default {
     },
     async sendFriendRequest(receiverId) {
       const response = await api.friendRequestApi.sendFriendRequest({receiverId});
-      if (response && response.status === 204) {
+      if (response?.status === 204) {
         this.$store.commit('setSentFriendRequests', [...this.$store.state.receivers, receiverId]);
       }
     },
     async cancelFriendRequest(receiverId) {
       const response = await api.friendRequestApi.cancelFriendRequest({receiverId});
-      if (response && response.status === 204) {
+      if (response?.status === 204) {
         this.$store.commit('setSentFriendRequests', this.$store.state.receivers.filter(id => id !== receiverId));
       }
     },
     async acceptFriendRequest(senderId) {
       const response = await api.friendRequestApi.acceptFriendRequest({senderId});
-      if (response && response.status === 204) {
+      if (response?.status === 204) {
         this.$store.commit('setReceivedFriendRequests', this.$store.state.senders.filter(id => id !== senderId));
         this.$store.commit('setCurrentUser', {
           ...this.$store.state.currentUser,
@@ -113,7 +113,7 @@ export default {
     },
     async rejectFriendRequest(senderId) {
       const response = await api.friendRequestApi.rejectFriendRequest({senderId});
-      if (response && response.status === 204) {
+      if (response?.status === 204) {
         this.$store.commit('setReceivedFriendRequests', this.$store.state.senders.filter(id => id !== senderId));
       }
     },
@@ -124,7 +124,7 @@ export default {
         }
       };
       const response = await api.friendRequestApi.deleteFromFriends(options);
-      if (response && response.status === 204) {
+      if (response?.status === 204) {
         this.$store.commit('setCurrentUser', {
           ...this.$store.state.currentUser,
           friends: this.$store.state.currentUser.friends.filter(id => id !== friendId)

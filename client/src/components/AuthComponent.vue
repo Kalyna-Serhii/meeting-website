@@ -80,12 +80,14 @@
         <button type="submit">Login</button>
       </div>
     </form>
+    <error-component></error-component>
   </div>
 </template>
 
 <script>
 import api from '@/api';
 import initInputMask from '../assets/initInputMask';
+import ErrorComponent from './ErrorComponent.vue'
 
 export default {
   data() {
@@ -93,6 +95,8 @@ export default {
       interests: ['sport', 'music', 'cinema', 'books', 'travel', 'games', 'cooking', 'art', 'theatre', 'fashion',
         'photography', 'cars', 'animals', 'nature', 'science', 'technology', 'politics', 'psychology', 'history',
         'religion', 'philosophy'],
+      error: false,
+      errorMessage: null,
     }
   },
   methods: {
@@ -103,27 +107,38 @@ export default {
       );
       const formData = new FormData(this.$refs.registerForm);
       formData.append('interests', JSON.stringify(checkedInterests));
-      const response = await api.authApi.register(formData);
-      if (response && response.status === 201) {
-        localStorage.setItem('isAuth', true);
-        this.$router.push('/');
+      try {
+        const response = await api.authApi.register(formData);
+        if (response?.status === 201) {
+          localStorage.setItem('isAuth', true);
+          this.$router.push('/');
+        }
+      } catch (error) {
+        this.$store.commit('setError', error?.response?.data.message);
       }
     },
     async submitLoginForm() {
       const formData = new FormData(this.$refs.loginForm);
-      const response = await api.authApi.login({
-        phone: formData.get('phone'),
-        password: formData.get('password')
-      });
-      if (response && response.status === 204) {
-        localStorage.setItem('isAuth', true);
-        this.$router.push('/');
+      try {
+        const response = await api.authApi.login({
+          phone: formData.get('phone'),
+          password: formData.get('password')
+        });
+        if (response?.status === 204) {
+          localStorage.setItem('isAuth', true);
+          this.$router.push('/');
+        }
+      } catch (error) {
+        this.$store.commit('setError', error?.response?.data.message);
       }
     },
   },
   mounted() {
     initInputMask(this.$refs.phone1);
     initInputMask(this.$refs.phone2);
-  }
+  },
+  components: {
+    ErrorComponent
+  },
 }
 </script>

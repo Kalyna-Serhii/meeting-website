@@ -90,12 +90,14 @@
         <button type="submit">Search</button>
       </div>
     </form>
+    <error-component></error-component>
   </div>
 </template>
 
 <script>
 import api from '@/api';
 import {serverURL} from "@/api/axiosInstance";
+import ErrorComponent from './ErrorComponent.vue'
 
 export default {
   data() {
@@ -116,6 +118,8 @@ export default {
       pageSize: 8,
       totalCount: 0,
       options: null,
+      error: false,
+      errorMessage: null,
     };
   },
   methods: {
@@ -143,54 +147,75 @@ export default {
           pageSize: this.pageSize,
         }
       };
-
-      const response = await api.userApi.getUsers(options);
-      if (response) {
-        this.users = response.users;
-        this.totalCount = response.totalCount;
-        window.scrollTo(0, 0);
+      try {
+        const response = await api.userApi.getUsers(options);
+        if (response) {
+          this.users = response.users;
+          this.totalCount = response.totalCount;
+          window.scrollTo(0, 0);
+        }
+      } catch (error) {
+        if (error?.response.status !== 401) {
+          this.$store.commit('setError', error?.response?.data.message);
+        }
       }
     },
     async sendFriendRequest(receiverId) {
-      const response = await api.friendRequestApi.sendFriendRequest({receiverId});
-      if (response && response.status === 204) {
-        this.$store.commit('setSentFriendRequests', [...this.$store.state.receivers, receiverId]);
+      try {
+        const response = await api.friendRequestApi.sendFriendRequest({receiverId});
+        if (response?.status === 204) {
+          this.$store.commit('setSentFriendRequests', [...this.$store.state.receivers, receiverId]);
+        }
+      } catch (error) {
+        this.$store.commit('setError', error?.response?.data.message);
       }
     },
     async cancelFriendRequest(receiverId) {
-      const response = await api.friendRequestApi.cancelFriendRequest({receiverId});
-      if (response && response.status === 204) {
-        this.$store.commit('setSentFriendRequests', this.$store.state.receivers.filter(id => id !== receiverId));
+      try {
+        const response = await api.friendRequestApi.cancelFriendRequest({receiverId});
+        if (response?.status === 204) {
+          this.$store.commit('setSentFriendRequests', this.$store.state.receivers.filter(id => id !== receiverId));
+        }
+      } catch (error) {
+        this.$store.commit('setError', error?.response?.data.message);
       }
     },
     async acceptFriendRequest(senderId) {
-      const response = await api.friendRequestApi.acceptFriendRequest({senderId});
-      if (response && response.status === 204) {
-        this.$store.commit('setReceivedFriendRequests', this.$store.state.senders.filter(id => id !== senderId));
-        this.$store.commit('setCurrentUser', {
-          ...this.$store.state.currentUser,
-          friends: [...this.$store.state.currentUser.friends, senderId]
-        });
+      try {
+        const response = await api.friendRequestApi.acceptFriendRequest({senderId});
+        if (response?.status === 204) {
+          this.$store.commit('setReceivedFriendRequests', this.$store.state.senders.filter(id => id !== senderId));
+          this.$store.commit('setCurrentUser', {
+            ...this.$store.state.currentUser,
+            friends: [...this.$store.state.currentUser.friends, senderId]
+          });
+        }
+      } catch (error) {
+        this.$store.commit('setError', error?.response?.data.message);
       }
     },
     async rejectFriendRequest(senderId) {
-      const response = await api.friendRequestApi.rejectFriendRequest({senderId});
-      if (response && response.status === 204) {
-        this.$store.commit('setReceivedFriendRequests', this.$store.state.senders.filter(id => id !== senderId));
+      try {
+        const response = await api.friendRequestApi.rejectFriendRequest({senderId});
+        if (response?.status === 204) {
+          this.$store.commit('setReceivedFriendRequests', this.$store.state.senders.filter(id => id !== senderId));
+        }
+      } catch (error) {
+        this.$store.commit('setError', error?.response?.data.message);
       }
     },
     async deleteFromFriends(friendId) {
-      const options = {
-        params: {
-          friendId,
+      const options = {params: {friendId}};
+      try {
+        const response = await api.friendRequestApi.deleteFromFriends(options);
+        if (response.status === 204) {
+          this.$store.commit('setCurrentUser', {
+            ...this.$store.state.currentUser,
+            friends: this.$store.state.currentUser.friends.filter(id => id !== friendId)
+          });
         }
-      };
-      const response = await api.friendRequestApi.deleteFromFriends(options);
-      if (response && response.status === 204) {
-        this.$store.commit('setCurrentUser', {
-          ...this.$store.state.currentUser,
-          friends: this.$store.state.currentUser.friends.filter(id => id !== friendId)
-        });
+      } catch (error) {
+        this.$store.commit('setError', error?.response?.data.message);
       }
     },
     calculatePageSize() {
@@ -206,6 +231,9 @@ export default {
   },
   async mounted() {
     await this.getUsers();
+  },
+  components: {
+    ErrorComponent
   },
 }
 </script>

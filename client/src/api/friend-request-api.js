@@ -2,77 +2,31 @@ import $api from "@/api/apiInstance";
 
 const friendRequestApi = {
     async getReceivedFriendRequests() {
-        try {
-            return await $api.get('/received-friend-requests');
-        } catch (error) {
-        }
+        return await $api.get('/received-friend-requests');
     },
 
     async getSentFriendRequests() {
-        try {
-            return await $api.get('/sent-friend-requests');
-        } catch (error) {
-        }
+        return await $api.get('/sent-friend-requests');
     },
 
     async sendFriendRequest(body) {
-        try {
-            return await $api.post('/send-friend-request', body);
-        } catch (error) {
-            if (error.response) {
-                alert(`Failed to send friend request: ${error.response.data.message}`);
-            } else {
-                alert(`Failed to send friend request: ${error.message || error}`);
-            }
-        }
+        return await $api.post('/send-friend-request', body);
     },
 
     async cancelFriendRequest(body) {
-        try {
-            return await $api.post('/cancel-friend-request', body);
-        } catch (error) {
-            if (error.response) {
-                alert(`Failed to cancel friend request: ${error.response.data.message}`);
-            } else {
-                alert(`Failed to cancel friend request: ${error.message || error}`);
-            }
-        }
+        return await $api.post('/cancel-friend-request', body);
     },
 
     async acceptFriendRequest(body) {
-        try {
-            return await $api.post('/accept-friend-request', body);
-        } catch (error) {
-            if (error.response) {
-                alert(`Failed to accept friend request: ${error.response.data.message}`);
-            } else {
-                alert(`Failed to accept friend request: ${error.message || error}`);
-            }
-        }
+        return await $api.post('/accept-friend-request', body);
     },
 
     async rejectFriendRequest(body) {
-        try {
-            return await $api.post('/reject-friend-request', body);
-        } catch (error) {
-            if (error.response) {
-                alert(`Failed to reject friend request: ${error.response.data.message}`);
-            } else {
-                alert(`Failed to reject friend request: ${error.message || error}`);
-            }
-        }
+        return await $api.post('/reject-friend-request', body);
     },
 
     async deleteFromFriends(options) {
-        try {
-            return await $api.delete('/delete-from-friends', options);
-        } catch (error) {
-            if (error.response) {
-                alert(`Failed to delete from friends: ${error.response.data.message}`);
-            } else {
-                alert(`Failed to delete from friends: ${error.message || error}`);
-            }
-        }
+        return await $api.delete('/delete-from-friends', options);
     },
 };
 
