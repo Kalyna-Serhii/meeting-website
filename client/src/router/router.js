@@ -11,38 +11,43 @@ const router = createRouter({
             }
         },
         {
-            path: '/auth',
-            component: () => import('../pages/AuthPage.vue'),
+            path: '/login',
+            component: () => import('../pages/LoginPage.vue'),
             meta: {
-                title: 'Authorization'
+                title: 'Login',
+                authNotRequired: true
             }
         },
         {
-            path: '/logout',
-            component: () => import('../pages/LogoutPage.vue'),
+            path: '/register',
+            component: () => import('../pages/RegistrationPage.vue'),
             meta: {
-                title: 'Logout'
-            }
-        },
-        {
-            path: '/profile',
-            component: () => import('../pages/ProfilePage.vue'),
-            meta: {
-                title: 'Profile'
-            }
-        },
-        {
-            path: '/user/:id',
-            component: () => import('../pages/UserPage.vue'),
-            meta: {
-                title: 'User'
+                title: 'Registration',
+                authNotRequired: true
             }
         },
     ]
 })
 
-router.beforeEach(to => {
-    document.title = to.meta?.title ?? ''
-})
+router.beforeEach(async (to, from, next) => {
+    document.title = to.meta?.title ?? '';
+    if (!to.matched.some(route => route.meta.authNotRequired)) {
+        const state = localStorage.getItem('isAuth');
+        const boolState = !(state === 'false' || state === null);
+        if (!boolState) {
+            return next(redirectToLogin(to.fullPath));
+        }
+    }
+    next();
+});
+
+function redirectToLogin(successfulLoginRedirectTo) {
+    return {
+        path: '/login',
+        query: {
+            redirect: successfulLoginRedirectTo
+        }
+    }
+}
 
 export default router

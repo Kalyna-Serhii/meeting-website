@@ -22,28 +22,13 @@ export default createStore({
             state.currentUser = null;
             state.senders = [];
             state.receivers = [];
-        },
-
-        setError(state, errorMessage) {
-            state.error = true;
-            state.errorMessage = errorMessage;
-        },
-        clearError(state) {
-            state.error = false;
-            state.errorMessage = '';
         }
     },
     actions: {
         logout({commit}) {
             commit('clearCurrentUser');
+            localStorage.setItem('isAuth', false);
         },
-
-        showError({commit}, errorMessage) {
-            commit('setError', errorMessage);
-        },
-        clearError({commit}) {
-            commit('clearError');
-        }
     },
     getters: {}
 });
