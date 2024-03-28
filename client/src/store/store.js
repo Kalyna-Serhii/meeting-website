@@ -6,7 +6,12 @@ export default createStore({
         senders: [],
         receivers: [],
         error: false,
-        errorMessage: ''
+        errorMessage: '',
+        interests: [
+            'sport', 'music', 'cinema', 'books', 'travel', 'games', 'cooking', 'art', 'theatre', 'fashion',
+            'photography', 'cars', 'animals', 'nature', 'science', 'technology', 'politics', 'psychology', 'history',
+            'religion', 'philosophy'
+        ],
     },
     mutations: {
         setCurrentUser(state, user) {
