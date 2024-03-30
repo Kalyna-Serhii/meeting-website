@@ -2,7 +2,7 @@
   <header>
     <nav class="navbar bg-body-tertiary">
       <div class="container-xxl container-fluid">
-        <router-link class="navbar-brand" to="/home">
+        <router-link class="navbar-brand" to="/">
           <img src="/ico.png" width="30" height="30"
                class="d-inline-block align-text-top">
             <span class="fw-semibold  ms-2">Meetings</span>

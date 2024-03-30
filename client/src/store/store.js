@@ -5,8 +5,6 @@ export default createStore({
         currentUser: null,
         senders: [],
         receivers: [],
-        error: false,
-        errorMessage: '',
         interests: [
             'sport', 'music', 'cinema', 'books', 'travel', 'games', 'cooking', 'art', 'theatre', 'fashion',
             'photography', 'cars', 'animals', 'nature', 'science', 'technology', 'politics', 'psychology', 'history',
