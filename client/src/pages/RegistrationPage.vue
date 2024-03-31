@@ -86,7 +86,6 @@ export default {
           formData.append('interests', JSON.stringify(this.interests));
           const response = await api.authApi.register(formData);
           if (response.status === 201) {
-            localStorage.setItem('isAuth', true);
             this.$router.push('/');
           }
         } catch (error) {

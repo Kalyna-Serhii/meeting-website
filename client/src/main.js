@@ -4,10 +4,6 @@ import router from './router/router.js'
 import store from "@/store/store";
 
 import './assets/main.css'
-//import {createVuetify} from 'vuetify'
-// import * as components from 'vuetify/components'
-// import * as directives from 'vuetify/directives'
-
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { fab } from "@fortawesome/free-brands-svg-icons";
@@ -18,11 +14,9 @@ library.add( fas, fab, far );
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.min'
+import 'bootstrap/dist/js/bootstrap.bundle.min'
 
-// const vuetify = createVuetify({
-//     components,
-//     directives,
-// })
+const VueCookies = require('vue-cookies');
 
 const app = createApp(App)
 
@@ -31,5 +25,5 @@ app
     .component('alert', Alert)
     .use(router)
     .use(store)
-    //.use(vuetify)
+    .use(VueCookies)
     .mount('#app')

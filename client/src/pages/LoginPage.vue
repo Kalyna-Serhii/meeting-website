@@ -54,7 +54,6 @@ export default {
         try {
           const response = await api.authApi.login(this.logData);
           if (response?.status === 204) {
-            localStorage.setItem('isAuth', true);
             const redirect = this.$router.currentRoute.value.query.redirect;
             this.$router.push(redirect ? redirect : '/');
           }

@@ -1,4 +1,7 @@
-import {createRouter, createWebHistory} from 'vue-router'
+import {createRouter, createWebHistory} from 'vue-router';
+import VueCookies from 'vue-cookies';
+import store from '@/store/store';
+import api from "@/api";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -32,10 +35,17 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
     document.title = to.meta?.title ?? '';
     if (!to.matched.some(route => route.meta.authNotRequired)) {
-        const state = localStorage.getItem('isAuth');
-        const boolState = !(state === 'false' || state === null);
-        if (!boolState) {
+        if (!VueCookies.get('accessToken')) {
             return next(redirectToLogin(to.fullPath));
+        } else {
+            if (!store.state.currentUser) {
+                try {
+                    store.state.currentUser =
+                        await api.userApi.getUserByToken();
+                } catch (error) {
+                    console.log(error)
+                }
+            }
         }
     }
     next();

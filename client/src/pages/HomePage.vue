@@ -6,8 +6,43 @@
         <div class="row">
           <div class="col-md-8 col-sm-12">
             <div class="main-block">
-              <div class="row">
-                <div class="col-4" v-for="user in this.users" :key="user.id">
+              <div class="row justify-content-center justify-content-sm-start">
+
+<!--                On mobile parameters-->
+                <div class="d-md-none d-flex mb-3">
+                  <div class="col-4 pe-2">
+                    <dropdown-menu :name="'Gender'"
+                         @dropdown-closed="getUsers(true)">
+                      <gender-input v-model="this.filters.gender"
+                          :type="'checkbox'">
+                      </gender-input>
+                    </dropdown-menu>
+                  </div>
+                  <div class="col-4">
+                    <dropdown-menu :name="'Age'"
+                        @dropdown-closed="getUsers(true)">
+                      <age-input v-model:value="this.filters.minAge"
+                           :placeholder="'Age from'">
+                      </age-input>
+                      <div class="mt-2">
+                        <age-input v-model:value="this.filters.maxAge"
+                             :placeholder="'Age to'">
+                        </age-input>
+                      </div>
+                    </dropdown-menu>
+                  </div>
+                  <div class="col-4 ps-2">
+                    <dropdown-menu :name="'Interests'"
+                          @dropdown-closed="getUsers(true)">
+                        <interests-list :one-column="true"
+                            @interest-checked="(categories) => this.filters.interests = categories">
+                        </interests-list>
+                    </dropdown-menu>
+                  </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6 col-sm-6 col-10"
+                     v-for="user in this.users" :key="user.id">
                   <div class="card mb-4">
                     <img :src="`${serverURL}/photos/${user.photoLink}`"
                          class="card-img-top"
@@ -28,7 +63,8 @@
               </div>
 
               <!--        pagination -->
-              <div class="d-flex justify-content-center">
+              <div class="d-flex justify-content-center"
+                  v-if="this.totalPages > 1">
                 <ul class="pagination pagination-md">
                   <li v-for="page in this.totalPages" :key="page"
                       :class="['page-item', page === this.filters.pageNumber ? 'active' : '']">
@@ -82,9 +118,11 @@ import AgeInput from "@/UI/AgeInput.vue";
 import api from "@/api";
 import {serverURL} from "@/api/axiosInstance";
 import Alert from "@/UI/Alert.vue";
+import DropdownMenu from "@/UI/DropdownMenu.vue";
+import logger from "@fortawesome/vue-fontawesome/src/logger";
 
 export default {
-  components: {Alert, AgeInput, GenderInput, InterestsList, MainLayout},
+  components: {DropdownMenu, Alert, AgeInput, GenderInput, InterestsList, MainLayout},
   data() {
     return {
       serverURL,
@@ -102,6 +140,7 @@ export default {
   },
 
   methods: {
+    logger,
     async getUsers(search) {
       try {
         if (search) {
@@ -110,7 +149,6 @@ export default {
         const response = await api.userApi.getUsers({params: this.filters});
         if (response) {
           this.users = response.users;
-          console.log(response.totalCount)
           this.totalPages = Math.ceil(response.totalCount / this.filters.pageSize);
         }
       } catch  {
