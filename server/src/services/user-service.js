@@ -50,6 +50,7 @@ const UserService = {
             },
             offset,
             limit: pageSize,
+            distinct: true,
         });
 
         const friends = await UserFriendModel.findAll({
