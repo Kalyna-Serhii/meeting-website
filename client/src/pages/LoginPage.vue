@@ -58,7 +58,8 @@ export default {
             this.$router.push(redirect ? redirect : '/');
           }
         } catch (error) {
-          this.$refs.alert.alert('danger', 'Invalid username or password');
+          this.$refs.alert.alert('danger',
+              `${error.response.data.message ?? 'Something went wrong'}`);
         }
       }
     }

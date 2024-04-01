@@ -13,7 +13,7 @@
                   <div class="col-4 pe-2">
                     <dropdown-menu :name="'Gender'"
                          @dropdown-closed="getUsers(true)">
-                      <gender-input v-model="this.filters.gender"
+                      <gender-input v-model="this.newFilters.gender"
                           :type="'checkbox'">
                       </gender-input>
                     </dropdown-menu>
@@ -21,11 +21,11 @@
                   <div class="col-4">
                     <dropdown-menu :name="'Age'"
                         @dropdown-closed="getUsers(true)">
-                      <age-input v-model:value="this.filters.minAge"
+                      <age-input v-model:value="this.newFilters.minAge"
                            :placeholder="'Age from'">
                       </age-input>
                       <div class="mt-2">
-                        <age-input v-model:value="this.filters.maxAge"
+                        <age-input v-model:value="this.newFilters.maxAge"
                              :placeholder="'Age to'">
                         </age-input>
                       </div>
@@ -35,19 +35,20 @@
                     <dropdown-menu :name="'Interests'"
                           @dropdown-closed="getUsers(true)">
                         <interests-list :one-column="true"
-                            @interest-checked="(categories) => this.filters.interests = categories">
+                            @interest-checked="(categories) => this.newFilters.interests = categories">
                         </interests-list>
                     </dropdown-menu>
                   </div>
                 </div>
 
                 <div class="col-lg-4 col-md-6 col-sm-6 col-10"
+                     v-if="this.users.length > 0"
                      v-for="user in this.users" :key="user.id">
                   <div class="card mb-4">
                     <img :src="`${serverURL}/photos/${user.photoLink}`"
-                         class="card-img-top"
+                         class="card-img-top object-fit-cover"
                          alt="User photo"
-                         style="height: 15rem; object-fit: cover;">
+                         style="height: 15rem;">
                     <div class="card-body">
                       <div class="d-flex justify-content-between">
                         <h5 class="card-title">{{user.name}}</h5>
@@ -55,10 +56,37 @@
                       </div>
                       <div>{{user.gender}}</div>
                       <div class="d-grid mt-2" style="margin: -0.5rem;">
-                        <button class="btn btn-primary">Add to friends</button>
+                        <button class="btn btn-danger"
+                                v-if="this.$store.state.currentUser?.friends.includes(user.id)"
+                                @click="deleteFromFriends(user.id)">
+                          Delete from friends
+                        </button>
+                        <div class="btn-group d-flex"
+                             v-else-if="this.$store.state.friendshipRequests?.includes(user.id)">
+                          <button class="btn btn-primary w-50"
+                                  @click="acceptFriendRequest(user.id)">
+                            Accept
+                          </button>
+                          <button class="btn btn-info text-white w-50"
+                                  @click="rejectFriendRequest(user.id)">
+                            Reject
+                          </button>
+                        </div>
+                        <button class="btn btn-info text-white"
+                                v-else-if="this.$store.state.userFriendshipRequests?.includes(user.id)"
+                                @click="cancelFriendRequest(user.id)">
+                          Cancel request
+                        </button>
+                        <button class="btn btn-primary" v-else
+                                @click="sendFriendRequest(user.id)">
+                          Add to friends
+                        </button>
                       </div>
                     </div>
                   </div>
+                </div>
+                <div v-else class="bg-danger text-white text-center rounded-2 p-2">
+                  Nobody found
                 </div>
               </div>
 
@@ -67,8 +95,8 @@
                   v-if="this.totalPages > 1">
                 <ul class="pagination pagination-md">
                   <li v-for="page in this.totalPages" :key="page"
-                      :class="['page-item', page === this.filters.pageNumber ? 'active' : '']">
-                    <span class="page-link" v-if="page === this.filters.pageNumber">{{ page }}</span>
+                      :class="['page-item', page === this.pageNumber ? 'active' : '']">
+                    <span class="page-link" v-if="page === this.pageNumber">{{ page }}</span>
                     <button class="page-link" v-else @click="toPage(page)">{{ page }}</button>
                   </li>
                 </ul>
@@ -80,24 +108,24 @@
             <div class="main-block">
               <h5 class="text-center mb-3">Choose parameters:</h5>
               <div class="mb-3">
-                <gender-input v-model="this.filters.gender" :type="'checkbox'"></gender-input>
+                <gender-input v-model="this.newFilters.gender" :type="'checkbox'"></gender-input>
               </div>
               <div class="mb-3">
                 <div class="row">
                   <div class="col-6">
-                    <age-input v-model:value="this.filters.minAge"
+                    <age-input v-model:value="this.newFilters.minAge"
                          :placeholder="'Age from'">
                     </age-input>
                   </div>
                   <div class="col-6">
-                    <age-input v-model:value="this.filters.maxAge"
+                    <age-input v-model:value="this.newFilters.maxAge"
                          :placeholder="'Age to'">
                     </age-input>
                   </div>
                 </div>
               </div>
               <interests-list
-                  @interest-checked="(categories) => this.filters.interests = categories">
+                  @interest-checked="(categories) => this.newFilters.interests = categories">
               </interests-list>
               <div class="d-grid mt-3">
                 <button class="btn btn-primary" @click="getUsers(true)">Search</button>
@@ -119,37 +147,39 @@ import api from "@/api";
 import {serverURL} from "@/api/axiosInstance";
 import Alert from "@/UI/Alert.vue";
 import DropdownMenu from "@/UI/DropdownMenu.vue";
-import logger from "@fortawesome/vue-fontawesome/src/logger";
 
 export default {
   components: {DropdownMenu, Alert, AgeInput, GenderInput, InterestsList, MainLayout},
   data() {
     return {
       serverURL,
-      filters: {
+      newFilters: {
         gender: 'all',
         minAge: '',
         maxAge: '',
-        interests: [],
-        pageNumber: 1,
-        pageSize: 6,
+        interests: []
       },
+      filters: {},
+      pageNumber: 1,
+      pageSize: 6,
       totalPages: null,
       users: []
     }
   },
 
   methods: {
-    logger,
     async getUsers(search) {
       try {
         if (search) {
-          this.filters.pageNumber = 1;
+          this.filters = JSON.parse(JSON.stringify(this.newFilters));
+          this.pageNumber = 1;
         }
+        this.filters.pageNumber = this.pageNumber;
+        this.filters.pageSize = this.pageSize;
         const response = await api.userApi.getUsers({params: this.filters});
         if (response) {
           this.users = response.users;
-          this.totalPages = Math.ceil(response.totalCount / this.filters.pageSize);
+          this.totalPages = Math.ceil(response.totalCount / this.pageSize);
         }
       } catch  {
         this.$refs.alert.alert('danger',
@@ -157,9 +187,61 @@ export default {
       }
     },
     async toPage(page) {
-      this.filters.pageNumber = page;
+      this.pageNumber = page;
       await this.getUsers();
-    }
+    },
+
+    async sendFriendRequest(receiverId) {
+      try {
+        const response = await api.friendRequestApi.sendFriendRequest({receiverId});
+        if (response?.status === 204) {
+          this.$store.dispatch('addFriend', receiverId);
+        }
+      } catch (error) {
+        this.$refs.alert.alert('danger', 'Failed to send friendship request');
+      }
+    },
+    async cancelFriendRequest(receiverId) {
+      try {
+        const response = await api.friendRequestApi.cancelFriendRequest({receiverId});
+        if (response?.status === 204) {
+          this.$store.dispatch('cancelFriendRequest', receiverId)
+        }
+      } catch (error) {
+        this.$refs.alert.alert('danger', 'Failed to cancel friendship request');
+      }
+    },
+    async acceptFriendRequest(senderId) {
+      try {
+        const response = await api.friendRequestApi.acceptFriendRequest({senderId});
+        if (response?.status === 204) {
+          this.$store.dispatch('acceptFriendRequest', senderId)
+        }
+      } catch (error) {
+        this.$refs.alert.alert('danger', 'Failed to accept friendship request');
+      }
+    },
+    async rejectFriendRequest(senderId) {
+      try {
+        const response = await api.friendRequestApi.rejectFriendRequest({senderId});
+        if (response?.status === 204) {
+          this.$store.dispatch('rejectFriendRequest', senderId)
+        }
+      } catch (error) {
+        this.$refs.alert.alert('danger', 'Failed to reject friendship request');
+      }
+    },
+    async deleteFromFriends(friendId) {
+      const options = {params: {friendId}};
+      try {
+        const response = await api.friendRequestApi.deleteFromFriends(options);
+        if (response.status === 204) {
+          this.$store.dispatch('deleteFromFriends', friendId)
+        }
+      } catch (error) {
+        this.$refs.alert.alert('danger', 'Failed to delete from friends');
+      }
+    },
   },
 
   async created() {

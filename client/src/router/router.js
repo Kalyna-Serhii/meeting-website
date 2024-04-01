@@ -43,7 +43,7 @@ router.beforeEach(async (to, from, next) => {
                     store.state.currentUser =
                         await api.userApi.getUserByToken();
                 } catch (error) {
-                    console.log(error)
+                    return next(redirectToLogin(to.fullPath));
                 }
             }
         }

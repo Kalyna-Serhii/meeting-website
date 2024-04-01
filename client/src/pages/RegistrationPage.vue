@@ -31,7 +31,7 @@
           <div class="col-md-6 col-sm-12">
             <photo-input :default-img-url="defaultPhotoUrl"></photo-input>
             <interests-list
-                @category-checked="(i) => this.interests = i">
+                @interest-checked="(i) => this.interests = i">
             </interests-list>
           </div>
           <div class="row justify-content-center">
@@ -89,7 +89,8 @@ export default {
             this.$router.push('/');
           }
         } catch (error) {
-          this.$refs.alert.alert('danger', 'Something went wrong');
+          this.$refs.alert.alert('danger',
+              `${error.response.data.message ?? 'Something went wrong'}`);
         }
       }
     }

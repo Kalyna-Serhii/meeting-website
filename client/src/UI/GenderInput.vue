@@ -11,7 +11,7 @@
              @click="handleChange">
       <label class="form-check-label" for="man">Man</label>
     </div>
-    <div class="form-check ms-3">
+    <div class="form-check ms-2">
       <input class="form-check-input"
              :type="type ?? 'radio'"
              name="gender"

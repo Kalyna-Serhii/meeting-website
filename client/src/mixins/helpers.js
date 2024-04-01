@@ -1,4 +1,5 @@
 import Inputmask from "inputmask"
+import {serverURL} from "@/api/axiosInstance";
 
 export default {
     methods: {
@@ -13,6 +14,12 @@ export default {
         addPhoneMask(phone) {
             const inputMask = new Inputmask('+38(999)-999-99-99');
             inputMask.mask(phone);
-        },
+        }
+    },
+
+    computed: {
+        serverPhotoUrl() {
+            return `${serverURL}/photos/`
+        }
     }
 }
