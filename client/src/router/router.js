@@ -29,6 +29,20 @@ const router = createRouter({
                 authNotRequired: true
             }
         },
+        {
+            path: '/my-account',
+            component: () => import('../pages/AccountPage.vue'),
+            meta: {
+                title: 'My profile',
+            }
+        },
+        {
+            path: '/user/:id',
+            component: () => import('../pages/AccountPage.vue'),
+            meta: {
+                title: 'User profile',
+            }
+        },
     ]
 })
 
@@ -40,8 +54,9 @@ router.beforeEach(async (to, from, next) => {
         } else {
             if (!store.state.currentUser) {
                 try {
-                    store.state.currentUser =
-                        await api.userApi.getUserByToken();
+                    store.state.currentUser = await api.userApi.getUserByToken();
+                    store.state.friendshipRequests = await api.friendRequestApi.getReceivedFriendRequests();
+                    store.state.userFriendshipRequests = await api.friendRequestApi.getSentFriendRequests();
                 } catch (error) {
                     return next(redirectToLogin(to.fullPath));
                 }

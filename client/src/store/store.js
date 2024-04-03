@@ -1,4 +1,5 @@
 import {createStore} from 'vuex';
+import VueCookies from 'vue-cookies';
 
 export default createStore({
     state: {
@@ -6,9 +7,9 @@ export default createStore({
         friendshipRequests: [],
         userFriendshipRequests: [],
         interests: [
-            'sport', 'music', 'cinema', 'books', 'travel', 'games', 'cooking', 'art', 'theatre', 'fashion',
-            'photography', 'cars', 'animals', 'nature', 'science', 'technology', 'politics', 'psychology', 'history',
-            'religion', 'philosophy'
+            'sport', 'music', 'cinema', 'books', 'travel', 'games', 'cooking', 'art', 'theatre', 'religion',
+            'fashion', 'cars', 'animals', 'nature', 'science', 'technology', 'politics', 'psychology', 'history',
+            'photography', 'philosophy'
         ],
     },
     mutations: {
@@ -23,8 +24,9 @@ export default createStore({
         },
         clearCurrentUser(state) {
             state.currentUser = null;
-            state.senders = [];
-            state.receivers = [];
+            state.friendshipRequests = [];
+            state.userFriendshipRequests = [];
+            VueCookies.remove('accessToken', )
         }
     },
     actions: {

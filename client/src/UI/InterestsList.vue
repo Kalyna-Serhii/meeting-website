@@ -1,13 +1,15 @@
 <template>
   <div class="row" id="interests">
-    <label class="form-label text-center" for="interests"
-        v-if="!oneColumn">
+    <p class="form-label text-center"
+        v-if="!oneColumn" >
       Interests
-    </label>
-    <div :class="[oneColumn ? 'col-10 offset-1' : 'col-5 offset-1', 'form-check']"
+    </p>
+    <div :class="[oneColumn ? 'col-10 offset-1' : `col-5 offset-${i % 2 === 0 ? '2' : ''}`, 'form-check']"
          v-for="(interest, i) in this.$store.state.interests" :key="i">
       <input class="form-check-input"
              type="checkbox" :value="interest"
+             :checked="interests?.includes(interest)"
+             :disabled="readonly"
              :id="`interest-${oneColumn ? '1' : '2'}-${i}`"
              @change="onCheck">
       <label class="form-check-label"
@@ -21,7 +23,9 @@
 <script>
 export default {
   props: {
-    oneColumn: Boolean
+    oneColumn: Boolean,
+    interests: Array,
+    readonly: Boolean
   },
 
   methods: {

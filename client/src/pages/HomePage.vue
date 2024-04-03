@@ -5,7 +5,7 @@
       <div class="container-xxl container-fluid my-5">
         <div class="row">
           <div class="col-md-8 col-sm-12">
-            <div class="main-block">
+            <div class="main-block h-100">
               <div class="row justify-content-center justify-content-sm-start">
 
 <!--                On mobile parameters-->
@@ -14,7 +14,8 @@
                     <dropdown-menu :name="'Gender'"
                          @dropdown-closed="getUsers(true)">
                       <gender-input v-model="this.newFilters.gender"
-                          :type="'checkbox'">
+                          :type="'checkbox'"
+                          :id-prefix="'mob-param'">
                       </gender-input>
                     </dropdown-menu>
                   </div>
@@ -41,14 +42,17 @@
                   </div>
                 </div>
 
+<!--                card -->
                 <div class="col-lg-4 col-md-6 col-sm-6 col-10"
                      v-if="this.users.length > 0"
                      v-for="user in this.users" :key="user.id">
                   <div class="card mb-4">
-                    <img :src="`${serverURL}/photos/${user.photoLink}`"
-                         class="card-img-top object-fit-cover"
-                         alt="User photo"
-                         style="height: 15rem;">
+                    <router-link :to="`/user/${user.id}`">
+                      <img :src="this.serverPhotoUrl + user.photoLink"
+                           class="card-img-top object-fit-cover"
+                           alt="User photo"
+                           style="height: 15rem;">
+                    </router-link>
                     <div class="card-body">
                       <div class="d-flex justify-content-between">
                         <h5 class="card-title">{{user.name}}</h5>
@@ -85,6 +89,7 @@
                     </div>
                   </div>
                 </div>
+
                 <div v-else class="bg-danger text-white text-center rounded-2 p-2">
                   Nobody found
                 </div>
@@ -108,7 +113,10 @@
             <div class="main-block">
               <h5 class="text-center mb-3">Choose parameters:</h5>
               <div class="mb-3">
-                <gender-input v-model="this.newFilters.gender" :type="'checkbox'"></gender-input>
+                <gender-input v-model="this.newFilters.gender"
+                    :type="'checkbox'"
+                    :id-prefix="'param'">
+                </gender-input>
               </div>
               <div class="mb-3">
                 <div class="row">
@@ -144,15 +152,16 @@ import InterestsList from "@/UI/InterestsList.vue";
 import GenderInput from "@/UI/GenderInput.vue";
 import AgeInput from "@/UI/AgeInput.vue";
 import api from "@/api";
-import {serverURL} from "@/api/axiosInstance";
 import Alert from "@/UI/Alert.vue";
 import DropdownMenu from "@/UI/DropdownMenu.vue";
+import helpers from "@/mixins/helpers";
 
 export default {
   components: {DropdownMenu, Alert, AgeInput, GenderInput, InterestsList, MainLayout},
+  mixins: [helpers],
+
   data() {
     return {
-      serverURL,
       newFilters: {
         gender: 'all',
         minAge: '',

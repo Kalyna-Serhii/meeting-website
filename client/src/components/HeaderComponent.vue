@@ -32,7 +32,6 @@
 
 <script>
 import helpers from "@/mixins/helpers";
-import api from "@/api";
 
 export default {
   mixins: [helpers],
@@ -47,21 +46,10 @@ export default {
     logout() {
       this.$store.dispatch('logout');
       this.$router.push('/login');
-    },
-    async getFriendsRequests() {
-      try {
-        this.$store.state.friendshipRequests =
-            await api.friendRequestApi.getReceivedFriendRequests();
-        this.$store.state.userFriendshipRequests =
-            await api.friendRequestApi.getSentFriendRequests();
-      } catch (error) {
-        this.$refs.alert.alert('danger', 'Failed to load friendship requests')
-      }
     }
   },
   created() {
     this.user = this.$store.state.currentUser;
-    this.getFriendsRequests();
   },
 }
 </script>

@@ -1,12 +1,15 @@
 <template>
-  <div class="row justify-content-center">
+  <div :class="['row', `justify-content-${justify ?? 'center'}`]">
     <div class="col-md-8 col-sm-12">
-      <img class="img-fluid" v-if="imgUrl" :src="imgUrl" alt="dish">
+      <img :class="['img-fluid object-fit-cover rounded-4 w-100', readonly ? 'my-2' : '']"
+           style="max-height: 30rem;"
+           v-if="imgUrl" :src="imgUrl" alt="user">
       <input class="form-control my-2"
              type="file"
              name="photo"
              accept=".jpg, .jpeg, .png"
              required
+             v-if="!readonly"
              @change="handleFileChange"
       >
     </div>
@@ -22,7 +25,10 @@
    },
 
    props: {
-     defaultImgUrl: String
+     defaultImgUrl: String,
+     userImg: String,
+     justify: String,
+     readonly: Boolean
    },
 
    methods: {
@@ -31,13 +37,13 @@
          this.photo = event.target.files[0];
          this.imgUrl = URL.createObjectURL(this.photo);
        } else {
-         this.imgUrl = this.defaultImgUrl;
+         this.imgUrl = this.userImg ?? this.defaultImgUrl;
        }
      }
    },
 
    mounted() {
-     this.imgUrl = this.defaultImgUrl;
+     this.imgUrl = this.userImg ?? this.defaultImgUrl;
    }
  }
 </script>

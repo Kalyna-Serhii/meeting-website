@@ -5,7 +5,7 @@
          type="password"
          name="password"
          pattern="^(?=.{4,}$).*"
-         placeholder="Enter password"
+         :placeholder="placeholder ?? 'Enter password'"
          :value="modelValue"
          @input="$emit('update:modelValue', $event.target.value)"
          required>
@@ -17,7 +17,8 @@
 <script>
   export default {
     props: {
-      modelValue: String
+      modelValue: String,
+      placeholder: String
     }
   }
 </script>

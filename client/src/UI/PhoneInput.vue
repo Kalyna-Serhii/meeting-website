@@ -9,6 +9,7 @@
          ref="phone"
          type="tel"
          pattern="^\+38\(\d{3}\)-\d{3}-\d{2}-\d{2}$"
+         :disabled="readonly"
          required>
   <div class="invalid-feedback">
     Please enter phone
@@ -20,7 +21,8 @@ import helpers from "@/mixins/helpers";
   export default {
     mixins: [helpers],
     props: {
-      modelValue: String
+      modelValue: String,
+      readonly: Boolean
     },
     mounted() {
       this.addPhoneMask(this.$refs.phone);

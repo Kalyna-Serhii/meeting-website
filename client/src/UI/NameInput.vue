@@ -7,6 +7,7 @@
          name="name"
          placeholder="Enter name"
          minlength="2"
+         :disabled="readonly"
          required>
   <div class="invalid-feedback">
     Please enter your name
@@ -16,7 +17,8 @@
 <script>
 export default {
   props: {
-    modelValue: String
+    modelValue: String,
+    readonly: Boolean
   }
 }
 </script>

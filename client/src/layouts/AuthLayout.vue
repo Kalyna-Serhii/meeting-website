@@ -2,8 +2,8 @@
   <div class="page bg-lightblue">
     <div class="container content d-flex align-items-center py-5">
       <div :class="[`col-lg-${wide ? '8' : '6'}`, `offset-lg-${wide ? '2' : '3'}`,
-                    `col-md-${wide ? '10' : '6'}`, `offset-md-${wide ? '1' : '3'}`,
-                    'col-12', 'offset-0']">
+                  `col-md-${wide ? '10' : '8'}`, `offset-md-${wide ? '1' : '2'}`,
+                  'col-12', 'offset-0']">
         <div class="main-block">
           <slot></slot>
         </div>
@@ -26,6 +26,6 @@ export default {
 
 <style scoped>
 .page {
-  min-height: 100vh; /* Минимальная высота равная высоте видимой области (viewport) */
+  min-height: 100vh;
 }
 </style>
