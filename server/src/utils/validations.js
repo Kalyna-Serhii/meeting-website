@@ -20,7 +20,6 @@ export const registerValidation = [
     check('password').isLength({min: 8}).withMessage('Password must be at least 8 characters long')
                      .isLength({max: 20}).withMessage('Password can\'t contain more than 20 characters'),
     check('interests').isJSON().withMessage('Interests must be a JSON object'),
-    check('photo').notEmpty().withMessage('Photo is required'),
 ];
 
 export const recieverFriendRequestValidation = [
