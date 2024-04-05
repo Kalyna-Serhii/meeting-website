@@ -8,7 +8,7 @@
          :placeholder="placeholder ?? 'Enter password'"
          :value="modelValue"
          @input="$emit('update:modelValue', $event.target.value)"
-         required>
+         :required="required">
   <div class="invalid-feedback">
     Please enter password
   </div>
@@ -18,7 +18,8 @@
   export default {
     props: {
       modelValue: String,
-      placeholder: String
+      placeholder: String,
+      required: Boolean
     }
   }
 </script>

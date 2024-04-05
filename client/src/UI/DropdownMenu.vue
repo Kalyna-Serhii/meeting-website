@@ -1,9 +1,9 @@
 <template>
   <div class="dropdown d-grid" ref="dropdown">
-    <button class="form-select"
+    <button :class="[`form-select bg-${bg}`]"
             type="button"
             id="dropdownMenuButton"
-            @click="openDropdown">
+            @click="toggleDropdown">
       {{name}}
     </button>
     <div class="dropdown-menu px-2 w-100"
@@ -11,6 +11,7 @@
     >
       <slot></slot>
       <button class="btn btn-primary btn-sm mt-2 w-100"
+            v-if="search"
             @click="closeDropdown">
         Search
       </button>
@@ -25,7 +26,10 @@ export default {
   components: {InterestsList},
 
   props: {
-    name: String
+    name: String,
+    bg: String,
+    w: String,
+    search: Boolean
   },
 
   data() {
@@ -35,6 +39,12 @@ export default {
   },
 
   methods: {
+    toggleDropdown() {
+      this.dropdownOpen
+          ? this.closeDropdown()
+          : this.openDropdown();
+    },
+
     openDropdown() {
         this.dropdownOpen = true;
         document.addEventListener('click', this.handleClickOutside);

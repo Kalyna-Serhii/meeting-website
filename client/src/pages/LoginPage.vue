@@ -12,7 +12,7 @@
         <phone-input v-model="logData.phone"></phone-input>
       </div>
       <div class="mb-3">
-        <password-input v-model="logData.password"></password-input>
+        <password-input v-model="logData.password" :required="true"></password-input>
       </div>
       <div class="d-grid mt-4 mb-2">
         <button class="btn btn-primary" type="submit">Log in</button>

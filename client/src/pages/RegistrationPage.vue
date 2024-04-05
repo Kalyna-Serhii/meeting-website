@@ -25,11 +25,13 @@
               <phone-input></phone-input>
             </div>
             <div class="mb-3">
-              <password-input></password-input>
+              <password-input :required="true"></password-input>
             </div>
           </div>
           <div class="col-md-6 col-sm-12">
-            <photo-input :default-img-url="defaultPhotoUrl"></photo-input>
+            <photo-input :default-img-url="defaultPhotoUrl"
+                 :required="true">
+            </photo-input>
             <interests-list
                 @interest-checked="(i) => this.interests = i">
             </interests-list>

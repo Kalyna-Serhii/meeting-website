@@ -11,7 +11,7 @@
 <!--                On mobile parameters-->
                 <div class="d-md-none d-flex mb-3">
                   <div class="col-4 pe-2">
-                    <dropdown-menu :name="'Gender'"
+                    <dropdown-menu :name="'Gender'" :serch="true"
                          @dropdown-closed="getUsers(true)">
                       <gender-input v-model="this.newFilters.gender"
                           :type="'checkbox'"
@@ -56,35 +56,24 @@
                     <div class="card-body">
                       <div class="d-flex justify-content-between">
                         <h5 class="card-title">{{user.name}}</h5>
-                        <div class="text-nowrap">{{user.age}} y.o</div>
+                        <div class="text-nowrap text-body-secondary">{{user.age}} y.o</div>
                       </div>
-                      <div>{{user.gender}}</div>
+                      <div class="text-body-secondary">{{user.gender}}</div>
                       <div class="d-grid mt-2" style="margin: -0.5rem;">
-                        <button class="btn btn-danger"
-                                v-if="this.$store.state.currentUser?.friends.includes(user.id)"
-                                @click="deleteFromFriends(user.id)">
-                          Delete from friends
-                        </button>
+                        <DeleteFromFriendsButton
+                            :id="user.id"
+                            v-if="this.$store.state.currentUser?.friends.includes(user.id)">
+                        </DeleteFromFriendsButton>
                         <div class="btn-group d-flex"
                              v-else-if="this.$store.state.friendshipRequests?.includes(user.id)">
-                          <button class="btn btn-primary w-50"
-                                  @click="acceptFriendRequest(user.id)">
-                            Accept
-                          </button>
-                          <button class="btn btn-info text-white w-50"
-                                  @click="rejectFriendRequest(user.id)">
-                            Reject
-                          </button>
+                          <AcceptFriendshipButton :id="user.id"></AcceptFriendshipButton>
+                          <RejectFriendshipButton :id="user.id"></RejectFriendshipButton>
                         </div>
-                        <button class="btn btn-info text-white"
-                                v-else-if="this.$store.state.userFriendshipRequests?.includes(user.id)"
-                                @click="cancelFriendRequest(user.id)">
-                          Cancel request
-                        </button>
-                        <button class="btn btn-primary" v-else
-                                @click="sendFriendRequest(user.id)">
-                          Add to friends
-                        </button>
+                        <CancelRequestButton
+                            v-else-if="this.$store.state.userFriendshipRequests?.includes(user.id)"
+                            :id="user.id">
+                        </CancelRequestButton>
+                        <AddFriendButton v-else :id="user.id"></AddFriendButton>
                       </div>
                     </div>
                   </div>
@@ -155,9 +144,19 @@ import api from "@/api";
 import Alert from "@/UI/Alert.vue";
 import DropdownMenu from "@/UI/DropdownMenu.vue";
 import helpers from "@/mixins/helpers";
+import AddFriendButton from "@/UI/buttons/AddFriendButton.vue";
+import CancelRequestButton from "@/UI/buttons/CancelRequestButton.vue";
+import AcceptFriendshipButton from "@/UI/buttons/AcceptFriendshipButton.vue";
+import RejectFriendshipButton from "@/UI/buttons/RejectFriendshipButton.vue";
+import DeleteFromFriendsButton from "@/UI/buttons/DeleteFromFriendsButton.vue";
 
 export default {
-  components: {DropdownMenu, Alert, AgeInput, GenderInput, InterestsList, MainLayout},
+  components: {
+    DeleteFromFriendsButton,
+    RejectFriendshipButton,
+    AcceptFriendshipButton,
+    CancelRequestButton,
+    AddFriendButton, DropdownMenu, Alert, AgeInput, GenderInput, InterestsList, MainLayout},
   mixins: [helpers],
 
   data() {
@@ -198,58 +197,6 @@ export default {
     async toPage(page) {
       this.pageNumber = page;
       await this.getUsers();
-    },
-
-    async sendFriendRequest(receiverId) {
-      try {
-        const response = await api.friendRequestApi.sendFriendRequest({receiverId});
-        if (response?.status === 204) {
-          this.$store.dispatch('addFriend', receiverId);
-        }
-      } catch (error) {
-        this.$refs.alert.alert('danger', 'Failed to send friendship request');
-      }
-    },
-    async cancelFriendRequest(receiverId) {
-      try {
-        const response = await api.friendRequestApi.cancelFriendRequest({receiverId});
-        if (response?.status === 204) {
-          this.$store.dispatch('cancelFriendRequest', receiverId)
-        }
-      } catch (error) {
-        this.$refs.alert.alert('danger', 'Failed to cancel friendship request');
-      }
-    },
-    async acceptFriendRequest(senderId) {
-      try {
-        const response = await api.friendRequestApi.acceptFriendRequest({senderId});
-        if (response?.status === 204) {
-          this.$store.dispatch('acceptFriendRequest', senderId)
-        }
-      } catch (error) {
-        this.$refs.alert.alert('danger', 'Failed to accept friendship request');
-      }
-    },
-    async rejectFriendRequest(senderId) {
-      try {
-        const response = await api.friendRequestApi.rejectFriendRequest({senderId});
-        if (response?.status === 204) {
-          this.$store.dispatch('rejectFriendRequest', senderId)
-        }
-      } catch (error) {
-        this.$refs.alert.alert('danger', 'Failed to reject friendship request');
-      }
-    },
-    async deleteFromFriends(friendId) {
-      const options = {params: {friendId}};
-      try {
-        const response = await api.friendRequestApi.deleteFromFriends(options);
-        if (response.status === 204) {
-          this.$store.dispatch('deleteFromFriends', friendId)
-        }
-      } catch (error) {
-        this.$refs.alert.alert('danger', 'Failed to delete from friends');
-      }
     },
   },
 

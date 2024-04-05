@@ -3,7 +3,18 @@
   <main-layout>
     <div class="container-xxl container-fluid my-5">
       <div class="row">
-        <div :class="[currentUserProfile ? 'col-md-8 col-sm-12' : 'col-10 offset-1']">
+        <div :class="[currentUserProfile ? 'col-lg-8 col-sm-12' : 'col-10 offset-1']">
+          <div class="container mb-3 d-lg-none d-block px-3">
+            <DropdownMenu :name="'Friendship Requests'" :bg="'light'" :search="false">
+              <FriendshipRequests
+                  v-if="friendshipRequestsUsers.length > 0"
+                  :friendship-requests-users="friendshipRequestsUsers"
+                  @accepted="id => acceptFriendRequest(id)"
+                  @rejected="id => rejectFriendRequest(id)">
+              </FriendshipRequests>
+              <p v-else class="text-center">No friendship requests yet</p>
+            </DropdownMenu>
+          </div>
           <div class="main-block h-100">
             <form action="#"
                   @submit.prevent="submit"
@@ -39,7 +50,8 @@
                     </div>
                     <div class="mb-3" v-if="currentUserProfile">
                       <password-input v-model="user.password"
-                              :placeholder="'Enter new password'">
+                              :placeholder="'Enter new password'"
+                              :required="false">
                       </password-input>
                     </div>
                   </div>
@@ -47,23 +59,40 @@
                     <photo-input v-if="user.photoLink !== ''"
                          :default-img-url="defaultPhotoUrl"
                          :user-img="this.serverPhotoUrl + user.photoLink"
-                         :readonly="!currentUserProfile">
+                         :readonly="!currentUserProfile"
+                         :required="false">
                     </photo-input>
                     <interests-list
-                        @interest-checked="(i) => this.interests = i"
+                        @interest-checked="(i) => this.user.interests = i"
                         :interests="user.interests"
                         :readonly="!currentUserProfile">
                     </interests-list>
                   </div>
+
                   <div class="row justify-content-center">
                     <div class="d-grid w-100 mt-4 mb-2">
                       <button class="btn btn-primary" type="submit"
                               v-if="currentUserProfile">
                         Submit changes
                       </button>
+                      <div class="d-grid" v-if="!currentUserProfile">
+                        <DeleteFromFriendsButton
+                            :id="user.id"
+                            v-if="this.$store.state.currentUser?.friends.includes(user.id)">
+                        </DeleteFromFriendsButton>
+                        <div class="btn-group d-flex"
+                             v-else-if="this.$store.state.friendshipRequests?.includes(user.id)">
+                          <AcceptFriendshipButton :id="user.id"></AcceptFriendshipButton>
+                          <RejectFriendshipButton :id="user.id"></RejectFriendshipButton>
+                        </div>
+                        <CancelRequestButton
+                            v-else-if="this.$store.state.userFriendshipRequests?.includes(user.id)"
+                            :id="user.id">
+                        </CancelRequestButton>
+                        <AddFriendButton v-else :id="user.id"></AddFriendButton>
+                      </div>
                       <router-link to="/"
-                           :class="[currentUserProfile ? 'link-secondary mt-2 text-center'
-                                                       : 'btn btn-primary']">
+                           class="link-secondary mt-2 text-center">
                         Home
                       </router-link>
                     </div>
@@ -74,34 +103,19 @@
           </div>
         </div>
 
-        <div :class="[currentUserProfile ? 'col-md-4' : 'd-none']">
-          <div class="main-block h-100">
-            <h5 class="text-center mb-4">Friendship requests</h5>
-            <div v-for="user in friendshipRequestsUsers" :key="user.id" class="container-fluid">
-              <div class="row main-block py-3 px-0 mb-3" style="background-color: #ebeced">
-                <div class="col-9 overflow-hidden">
-                  <router-link class="navbar-brand d-flex" :to="`/user/${user.id}`">
-                    <img :src="this.serverPhotoUrl + user.photoLink"
-                         width="40" height="40"
-                         class="d-inline-block align-text-top object-fit-cover rounded-circle">
-                    <div class="mt-2 ms-2 fs-6">{{user.name}}</div>
-                  </router-link>
-                </div>
-                <div class="col-3 d-flex mt-2">
-                  <button class="btn btn-link link-success ms-auto p-0"
-                      @click="acceptFriendRequest(user.id)">
-                    <font-awesome-icon :icon="['far', 'circle-check']" size="xl" />
-                  </button>
-                  <button class="btn btn-link link-danger p-0 ms-2"
-                      @click="rejectFriendRequest(user.id)">
-                    <font-awesome-icon :icon="['far', 'circle-xmark']" size="xl"/>
-                  </button>
-                </div>
-              </div>
-
+        <div :class="[currentUserProfile ? 'col-lg-4 d-lg-flex d-none' : 'd-none']">
+          <div class="main-block w-100">
+            <div class="overflow-y-auto" style="max-height: 40rem;">
+              <h5 class="text-center mb-4">Friendship requests</h5>
+              <FriendshipRequests
+                  :friendship-requests-users="friendshipRequestsUsers"
+                  @accepted="id => acceptFriendRequest(id)"
+                  @rejected="id => rejectFriendRequest(id)">
+              </FriendshipRequests>
             </div>
           </div>
         </div>
+
       </div>
     </div>
   </main-layout>
@@ -119,9 +133,24 @@ import AgeInput from "@/UI/AgeInput.vue";
 import InterestsList from "@/UI/InterestsList.vue";
 import NameInput from "@/UI/NameInput.vue";
 import helpers from "@/mixins/helpers";
+import AddFriendButton from "@/UI/buttons/AddFriendButton.vue";
+import CancelRequestButton from "@/UI/buttons/CancelRequestButton.vue";
+import DropdownMenu from "@/UI/DropdownMenu.vue";
+import FriendshipRequests from "@/UI/FriendshipRequests.vue";
+import AcceptFriendshipButton from "@/UI/buttons/AcceptFriendshipButton.vue";
+import RejectFriendshipButton from "@/UI/buttons/RejectFriendshipButton.vue";
+import DeleteFromFriendsButton from "@/UI/buttons/DeleteFromFriendsButton.vue";
 
 export default {
-  components: {NameInput, InterestsList, AgeInput, GenderInput, PasswordInput, PhoneInput, MainLayout, Alert, PhotoInput},
+  components: {
+    DeleteFromFriendsButton,
+    RejectFriendshipButton,
+    AcceptFriendshipButton,
+    FriendshipRequests,
+    DropdownMenu,
+    CancelRequestButton,
+    AddFriendButton,
+    NameInput, InterestsList, AgeInput, GenderInput, PasswordInput, PhoneInput, MainLayout, Alert, PhotoInput},
   mixins: [helpers],
 
   data() {
@@ -158,29 +187,30 @@ export default {
       }
     },
     async acceptFriendRequest(senderId) {
-      try {
-        const response = await api.friendRequestApi.acceptFriendRequest({senderId});
-        if (response?.status === 204) {
-          this.$store.dispatch('acceptFriendRequest', senderId);
-          this.friendshipRequestsUsers =
-              this.friendshipRequestsUsers.filter(user => user.id !== senderId);
-        }
-      } catch (error) {
-        this.$refs.alert.alert('danger', 'Failed to accept friendship request');
-      }
+      this.friendshipRequestsUsers =
+          this.friendshipRequestsUsers.filter(user => user.id !== senderId);
     },
     async rejectFriendRequest(senderId) {
-      try {
-        const response = await api.friendRequestApi.rejectFriendRequest({senderId});
-        if (response?.status === 204) {
-          this.$store.dispatch('rejectFriendRequest', senderId);
-          this.friendshipRequestsUsers =
-              this.friendshipRequestsUsers.filter(user => user.id !== senderId);
-        }
-      } catch (error) {
-        this.$refs.alert.alert('danger', 'Failed to reject friendship request');
+      this.friendshipRequestsUsers =
+          this.friendshipRequestsUsers.filter(user => user.id !== senderId);
+    },
+    async submit() {
+      if (this.user.interests.length === 0) {
+        this.$refs.alert.alert('warning', 'Choose at least one interest');
+        return;
       }
-    }
+      if (this.validateForm()) {
+        try {
+          const formData = new FormData(this.$refs.form);
+          formData.append('interests', JSON.stringify(this.user.interests));
+          await api.userApi.updateUser(formData);
+          this.$refs.alert.alert('success', 'Successfully updated user');
+        } catch (error) {
+          this.$refs.alert.alert('danger',
+              `${error.response.data.message ?? 'Something went wrong'}`);
+        }
+      }
+    },
   },
 
   computed: {
@@ -190,10 +220,16 @@ export default {
   },
 
   async created() {
-    this.user = this.currentUserProfile
-        ? this.$store.state.currentUser
-        : await this.getUserById(this.$route.params.id);
-    this.friendshipRequestsUsers = await this.getFriendshipRequests();
+    if (this.currentUserProfile) {
+      this.user = this.$store.state.currentUser;
+    } else {
+      const id = this.$route.params.id;
+      if (id === `${this.$store.state.currentUser.id}`) {
+        this.$router.push('/my-account');
+      }
+      this.user = await this.getUserById(id)
+    }
+    this.friendshipRequestsUsers = await this.getFriendshipRequests()
   }
 }
 </script>
