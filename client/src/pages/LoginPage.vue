@@ -32,8 +32,8 @@ import AuthLayout from "@/layouts/AuthLayout.vue";
 import Alert from "@/UI/Alert.vue";
 import api from "@/api";
 import helpers from "@/mixins/helpers";
-import PhoneInput from "@/UI/PhoneInput.vue";
-import PasswordInput from "@/UI/PasswordInput.vue";
+import PhoneInput from "@/UI/inputs/PhoneInput.vue";
+import PasswordInput from "@/UI/inputs/PasswordInput.vue";
 
 export default {
   components: {PasswordInput, PhoneInput, Alert, AuthLayout},

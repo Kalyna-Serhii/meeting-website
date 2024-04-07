@@ -1,4 +1,5 @@
-import {createRouter, createWebHistory} from 'vue-router';
+import
+{createRouter, createWebHistory} from 'vue-router';
 import VueCookies from 'vue-cookies';
 import store from '@/store/store';
 import api from "@/api";
@@ -38,7 +39,7 @@ const router = createRouter({
         },
         {
             path: '/user/:id',
-            component: () => import('../pages/AccountPage.vue'),
+            component: () => import('../pages/UserPage.vue'),
             meta: {
                 title: 'User profile',
             }

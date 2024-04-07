@@ -5,6 +5,7 @@
          :placeholder="placeholder ?? 'Enter age'"
          :value="modelValue"
          @input="$emit('update:modelValue', $event.target.value)"
+         @change="$emit('changed', $event.target.value)"
          type="number"
          min="1" max="99"
          :id="id"
@@ -17,6 +18,7 @@
 
 <script>
   export default {
+    emits: ['changed', 'update:modelValue'],
     props: {
       modelValue: {
         type: [String, Number],
@@ -27,7 +29,7 @@
       },
       placeholder: String,
       id: String,
-      readonly: Boolean
+      readonly: Boolean,
     }
   }
 </script>

@@ -58,13 +58,13 @@ import AuthLayout from "@/layouts/AuthLayout.vue";
 import Alert from "@/UI/Alert.vue";
 import api from "@/api";
 import helpers from "@/mixins/helpers";
-import InterestsList from "@/UI/InterestsList.vue";
-import PhotoInput from "@/UI/PhotoInput.vue";
-import PasswordInput from "@/UI/PasswordInput.vue";
-import PhoneInput from "@/UI/PhoneInput.vue";
-import AgeInput from "@/UI/AgeInput.vue";
-import GenderInput from "@/UI/GenderInput.vue";
-import NameInput from "@/UI/NameInput.vue";
+import InterestsList from "@/UI/inputs/InterestsList.vue";
+import PhotoInput from "@/UI/inputs/PhotoInput.vue";
+import PasswordInput from "@/UI/inputs/PasswordInput.vue";
+import PhoneInput from "@/UI/inputs/PhoneInput.vue";
+import AgeInput from "@/UI/inputs/AgeInput.vue";
+import GenderInput from "@/UI/inputs/GenderInput.vue";
+import NameInput from "@/UI/inputs/NameInput.vue";
 
 export default {
   components: {NameInput, GenderInput, AgeInput, PhoneInput, PasswordInput, PhotoInput, InterestsList, Alert, AuthLayout},

@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import InterestsList from "@/UI/InterestsList.vue";
+import InterestsList from "@/UI/inputs/InterestsList.vue";
 
 export default {
   components: {InterestsList},
@@ -28,7 +28,6 @@ export default {
   props: {
     name: String,
     bg: String,
-    w: String,
     search: Boolean
   },
 

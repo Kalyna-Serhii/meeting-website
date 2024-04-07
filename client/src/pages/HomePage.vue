@@ -11,7 +11,8 @@
 <!--                On mobile parameters-->
                 <div class="d-md-none d-flex mb-3">
                   <div class="col-4 pe-2">
-                    <dropdown-menu :name="'Gender'" :serch="true"
+                    <dropdown-menu :name="'Gender'"
+                         :search="true"
                          @dropdown-closed="getUsers(true)">
                       <gender-input v-model="this.newFilters.gender"
                           :type="'checkbox'"
@@ -21,19 +22,18 @@
                   </div>
                   <div class="col-4">
                     <dropdown-menu :name="'Age'"
+                        :search="true"
                         @dropdown-closed="getUsers(true)">
-                      <age-input v-model:value="this.newFilters.minAge"
-                           :placeholder="'Age from'">
-                      </age-input>
-                      <div class="mt-2">
-                        <age-input v-model:value="this.newFilters.maxAge"
-                             :placeholder="'Age to'">
-                        </age-input>
-                      </div>
+                      <AgeFilter
+                          v-model:min-age="this.newFilters.minAge"
+                          v-model:max-age="this.newFilters.maxAge"
+                          :inline="false">
+                      </AgeFilter>
                     </dropdown-menu>
                   </div>
                   <div class="col-4 ps-2">
                     <dropdown-menu :name="'Interests'"
+                          :search="true"
                           @dropdown-closed="getUsers(true)">
                         <interests-list :one-column="true"
                             @interest-checked="(categories) => this.newFilters.interests = categories">
@@ -62,24 +62,36 @@
                       <div class="d-grid mt-2" style="margin: -0.5rem;">
                         <DeleteFromFriendsButton
                             :id="user.id"
-                            v-if="this.$store.state.currentUser?.friends.includes(user.id)">
+                            v-if="this.$store.state.currentUser?.friends.includes(user.id)"
+                            @error="message => $refs.alert.alert('danger', message)">
                         </DeleteFromFriendsButton>
                         <div class="btn-group d-flex"
                              v-else-if="this.$store.state.friendshipRequests?.includes(user.id)">
-                          <AcceptFriendshipButton :id="user.id"></AcceptFriendshipButton>
-                          <RejectFriendshipButton :id="user.id"></RejectFriendshipButton>
+                          <AcceptFriendshipButton
+                              :id="user.id"
+                              @error="message => $refs.alert.alert('danger', message)">
+                          </AcceptFriendshipButton>
+                          <RejectFriendshipButton
+                              :id="user.id"
+                              @error="message => $refs.alert.alert('danger', message)">
+                          </RejectFriendshipButton>
                         </div>
                         <CancelRequestButton
                             v-else-if="this.$store.state.userFriendshipRequests?.includes(user.id)"
-                            :id="user.id">
+                            :id="user.id"
+                            @error="message => $refs.alert.alert('danger', message)">
                         </CancelRequestButton>
-                        <AddFriendButton v-else :id="user.id"></AddFriendButton>
+                        <AddFriendButton
+                            v-else
+                            :id="user.id"
+                            @error="message => $refs.alert.alert('danger', message)">
+                        </AddFriendButton>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div v-else class="bg-danger text-white text-center rounded-2 p-2">
+                <div v-else class="text-center">
                   Nobody found
                 </div>
               </div>
@@ -109,16 +121,11 @@
               </div>
               <div class="mb-3">
                 <div class="row">
-                  <div class="col-6">
-                    <age-input v-model:value="this.newFilters.minAge"
-                         :placeholder="'Age from'">
-                    </age-input>
-                  </div>
-                  <div class="col-6">
-                    <age-input v-model:value="this.newFilters.maxAge"
-                         :placeholder="'Age to'">
-                    </age-input>
-                  </div>
+                  <AgeFilter
+                    v-model:min-age="this.newFilters.minAge"
+                    v-model:max-age="this.newFilters.maxAge"
+                    :inline="true">
+                  </AgeFilter>
                 </div>
               </div>
               <interests-list
@@ -137,9 +144,9 @@
 
 <script>
 import MainLayout from "@/layouts/MainLayout.vue";
-import InterestsList from "@/UI/InterestsList.vue";
-import GenderInput from "@/UI/GenderInput.vue";
-import AgeInput from "@/UI/AgeInput.vue";
+import InterestsList from "@/UI/inputs/InterestsList.vue";
+import GenderInput from "@/UI/inputs/GenderInput.vue";
+import AgeInput from "@/UI/inputs/AgeInput.vue";
 import api from "@/api";
 import Alert from "@/UI/Alert.vue";
 import DropdownMenu from "@/UI/DropdownMenu.vue";
@@ -149,9 +156,11 @@ import CancelRequestButton from "@/UI/buttons/CancelRequestButton.vue";
 import AcceptFriendshipButton from "@/UI/buttons/AcceptFriendshipButton.vue";
 import RejectFriendshipButton from "@/UI/buttons/RejectFriendshipButton.vue";
 import DeleteFromFriendsButton from "@/UI/buttons/DeleteFromFriendsButton.vue";
+import AgeFilter from "@/UI/AgeFilter.vue";
 
 export default {
   components: {
+    AgeFilter,
     DeleteFromFriendsButton,
     RejectFriendshipButton,
     AcceptFriendshipButton,

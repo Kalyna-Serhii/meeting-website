@@ -1,16 +1,19 @@
 <template>
   <alert ref="alert"></alert>
+  <confirmation-modal @confirmed="deleteAccount"></confirmation-modal>
+
   <main-layout>
     <div class="container-xxl container-fluid my-5">
       <div class="row">
-        <div :class="[currentUserProfile ? 'col-lg-8 col-sm-12' : 'col-10 offset-1']">
+        <div class="col-lg-8 col-sm-12">
           <div class="container mb-3 d-lg-none d-block px-3">
             <DropdownMenu :name="'Friendship Requests'" :bg="'light'" :search="false">
               <FriendshipRequests
                   v-if="friendshipRequestsUsers.length > 0"
                   :friendship-requests-users="friendshipRequestsUsers"
                   @accepted="id => acceptFriendRequest(id)"
-                  @rejected="id => rejectFriendRequest(id)">
+                  @rejected="id => rejectFriendRequest(id)"
+                  @error="message => $refs.alert.alert('danger', message)">
               </FriendshipRequests>
               <p v-else class="text-center">No friendship requests yet</p>
             </DropdownMenu>
@@ -21,78 +24,56 @@
                   ref="form"
                   class="needs-validation"
                   id="account-form"
-                  novalidate>
+                  novalidate
+                  v-if="user">
               <div class="container">
                 <div class="row">
                   <div class="col-lg-6 col-md-5 col-sm-12">
                     <div class="mb-3">
-                      <name-input v-model="user.name"
-                          :readonly="!currentUserProfile">
-                      </name-input>
+                      <name-input v-model="user.name"/>
                     </div>
                     <label class="form-label ms-2" for="user-gender">Gender</label>
                     <div class="mb-3">
-                      <gender-input v-model="user.gender"
-                          id-prefix="user"
-                          :readonly="!currentUserProfile">
-                      </gender-input>
+                      <gender-input v-model="user.gender" id-prefix="user"/>
                     </div>
                     <div class="mb-3">
-                      <age-input v-model="user.age"
-                           :id="'user-age'"
-                           :readonly="!currentUserProfile">
-                      </age-input>
+                      <age-input v-model="user.age" :id="'user-age'"/>
                     </div>
                     <div class="mb-3">
-                      <phone-input v-model="user.phone"
-                             :readonly="!currentUserProfile">
-                      </phone-input>
+                      <phone-input v-model="user.phone"/>
                     </div>
-                    <div class="mb-3" v-if="currentUserProfile">
+                    <div class="mb-3">
                       <password-input v-model="user.password"
-                              :placeholder="'Enter new password'"
-                              :required="false">
+                          :placeholder="'Enter new password'"
+                          :required="false">
                       </password-input>
                     </div>
                   </div>
                   <div class="col-lg-6 col-md-7 col-sm-12">
                     <photo-input v-if="user.photoLink !== ''"
-                         :default-img-url="defaultPhotoUrl"
-                         :user-img="this.serverPhotoUrl + user.photoLink"
-                         :readonly="!currentUserProfile"
-                         :required="false">
+                       :default-img-url="defaultPhotoUrl"
+                       :user-img="this.serverPhotoUrl + user.photoLink"
+                       :required="false">
                     </photo-input>
                     <interests-list
                         @interest-checked="(i) => this.user.interests = i"
-                        :interests="user.interests"
-                        :readonly="!currentUserProfile">
+                        :interests="user.interests">
                     </interests-list>
                   </div>
 
                   <div class="row justify-content-center">
                     <div class="d-grid w-100 mt-4 mb-2">
-                      <button class="btn btn-primary" type="submit"
-                              v-if="currentUserProfile">
-                        Submit changes
-                      </button>
-                      <div class="d-grid" v-if="!currentUserProfile">
-                        <DeleteFromFriendsButton
-                            :id="user.id"
-                            v-if="this.$store.state.currentUser?.friends.includes(user.id)">
-                        </DeleteFromFriendsButton>
-                        <div class="btn-group d-flex"
-                             v-else-if="this.$store.state.friendshipRequests?.includes(user.id)">
-                          <AcceptFriendshipButton :id="user.id"></AcceptFriendshipButton>
-                          <RejectFriendshipButton :id="user.id"></RejectFriendshipButton>
-                        </div>
-                        <CancelRequestButton
-                            v-else-if="this.$store.state.userFriendshipRequests?.includes(user.id)"
-                            :id="user.id">
-                        </CancelRequestButton>
-                        <AddFriendButton v-else :id="user.id"></AddFriendButton>
+                      <div class="d-grid">
+                        <button class="btn btn-primary" type="submit">
+                          Submit changes
+                        </button>
+                        <button class="btn btn-danger mt-2"
+                                data-bs-toggle="modal" data-bs-target="#confirmModal"
+                                @click.prevent>
+                          Delete account
+                        </button>
                       </div>
-                      <router-link to="/"
-                           class="link-secondary mt-2 text-center">
+                      <router-link to="/" class="link-secondary mt-2 text-center">
                         Home
                       </router-link>
                     </div>
@@ -100,17 +81,19 @@
                 </div>
               </div>
             </form>
+            <div v-else class="text-center">User was not found</div>
           </div>
         </div>
 
-        <div :class="[currentUserProfile ? 'col-lg-4 d-lg-flex d-none' : 'd-none']">
+        <div class="col-lg-4 d-lg-flex d-none">
           <div class="main-block w-100">
             <div class="overflow-y-auto" style="max-height: 40rem;">
               <h5 class="text-center mb-4">Friendship requests</h5>
               <FriendshipRequests
                   :friendship-requests-users="friendshipRequestsUsers"
                   @accepted="id => acceptFriendRequest(id)"
-                  @rejected="id => rejectFriendRequest(id)">
+                  @rejected="id => rejectFriendRequest(id)"
+                  @error="message => $refs.alert.alert('danger', message)">
               </FriendshipRequests>
             </div>
           </div>
@@ -123,15 +106,15 @@
 
 <script>
 import Alert from "@/UI/Alert.vue";
-import PhotoInput from "@/UI/PhotoInput.vue";
+import PhotoInput from "@/UI/inputs/PhotoInput.vue";
 import MainLayout from "@/layouts/MainLayout.vue";
 import api from "@/api";
-import PhoneInput from "@/UI/PhoneInput.vue";
-import PasswordInput from "@/UI/PasswordInput.vue";
-import GenderInput from "@/UI/GenderInput.vue";
-import AgeInput from "@/UI/AgeInput.vue";
-import InterestsList from "@/UI/InterestsList.vue";
-import NameInput from "@/UI/NameInput.vue";
+import PhoneInput from "@/UI/inputs/PhoneInput.vue";
+import PasswordInput from "@/UI/inputs/PasswordInput.vue";
+import GenderInput from "@/UI/inputs/GenderInput.vue";
+import AgeInput from "@/UI/inputs/AgeInput.vue";
+import InterestsList from "@/UI/inputs/InterestsList.vue";
+import NameInput from "@/UI/inputs/NameInput.vue";
 import helpers from "@/mixins/helpers";
 import AddFriendButton from "@/UI/buttons/AddFriendButton.vue";
 import CancelRequestButton from "@/UI/buttons/CancelRequestButton.vue";
@@ -140,9 +123,11 @@ import FriendshipRequests from "@/UI/FriendshipRequests.vue";
 import AcceptFriendshipButton from "@/UI/buttons/AcceptFriendshipButton.vue";
 import RejectFriendshipButton from "@/UI/buttons/RejectFriendshipButton.vue";
 import DeleteFromFriendsButton from "@/UI/buttons/DeleteFromFriendsButton.vue";
+import ConfirmationModal from "@/UI/ConfirmationModal.vue";
 
 export default {
   components: {
+    ConfirmationModal,
     DeleteFromFriendsButton,
     RejectFriendshipButton,
     AcceptFriendshipButton,
@@ -172,7 +157,7 @@ export default {
   methods: {
     async getUserById(id) {
       try {
-        return api.userApi.getUserById(id)
+        return await api.userApi.getUserById(id)
       } catch {
         this.$refs.alert.alert('danger', `Failed to fetch user`)
       }
@@ -211,25 +196,19 @@ export default {
         }
       }
     },
-  },
-
-  computed: {
-    currentUserProfile() {
-      return this.$route.params.id === undefined;
+    async deleteAccount() {
+      try {
+        await api.userApi.deleteUser();
+        this.$router.push('/login');
+      } catch {
+        this.$refs.alert.alert('danger', 'Failed to delete your account');
+      }
     }
   },
 
   async created() {
-    if (this.currentUserProfile) {
-      this.user = this.$store.state.currentUser;
-    } else {
-      const id = this.$route.params.id;
-      if (id === `${this.$store.state.currentUser.id}`) {
-        this.$router.push('/my-account');
-      }
-      this.user = await this.getUserById(id)
-    }
-    this.friendshipRequestsUsers = await this.getFriendshipRequests()
+    this.user = this.$store.state.currentUser;
+    this.friendshipRequestsUsers = await this.getFriendshipRequests();
   }
 }
 </script>

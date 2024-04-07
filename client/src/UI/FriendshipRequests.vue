@@ -16,11 +16,13 @@
         <div class="col-3 d-flex mt-2 ps-0">
           <AcceptFriendshipButton :id="user.id" class="ms-auto"
                 :small="true"
-                @accepted="$emit('accepted', user.id)">
+                @accepted="$emit('accepted', user.id)"
+                @error="message => $emit('error', message)">
           </AcceptFriendshipButton>
           <RejectFriendshipButton :id="user.id"
                 :small="true"
-                @rejected="$emit('rejected', user.id)">
+                @rejected="$emit('rejected', user.id)"
+                @error="message => $emit('error', message)">
           </RejectFriendshipButton>
         </div>
       </div>
