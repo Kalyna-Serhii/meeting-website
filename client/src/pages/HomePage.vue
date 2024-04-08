@@ -172,8 +172,8 @@ export default {
     return {
       newFilters: {
         gender: 'all',
-        minAge: '',
-        maxAge: '',
+        minAge: null,
+        maxAge: null,
         interests: []
       },
       filters: {},

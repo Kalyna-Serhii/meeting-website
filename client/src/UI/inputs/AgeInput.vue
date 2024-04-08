@@ -7,7 +7,7 @@
          @input="$emit('update:modelValue', $event.target.value)"
          @change="$emit('changed', $event.target.value)"
          type="number"
-         min="1" max="99"
+         min="14" max="99"
          :id="id"
          :disabled="readonly"
          required>

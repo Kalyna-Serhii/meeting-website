@@ -4,13 +4,13 @@
          id="password"
          type="password"
          name="password"
-         pattern="^(?=.{4,}$).*"
+         pattern="^(?=.{8,20}$).*"
          :placeholder="placeholder ?? 'Enter password'"
          :value="modelValue"
          @input="$emit('update:modelValue', $event.target.value)"
          :required="required">
   <div class="invalid-feedback">
-    Please enter password
+    Please enter password (8-20 signs)
   </div>
 </template>
 

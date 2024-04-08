@@ -189,6 +189,7 @@ export default {
           const formData = new FormData(this.$refs.form);
           formData.append('interests', JSON.stringify(this.user.interests));
           await api.userApi.updateUser(formData);
+          this.$store.commit('setCurrentUser', this.user);
           this.$refs.alert.alert('success', 'Successfully updated user');
         } catch (error) {
           this.$refs.alert.alert('danger',

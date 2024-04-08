@@ -8,9 +8,10 @@
          placeholder="Enter name"
          minlength="2"
          :disabled="readonly"
+         pattern="^[A-Z][a-zA-Z]*$"
          required>
   <div class="invalid-feedback">
-    Please enter your name
+    Please enter your valid name
   </div>
 </template>
 

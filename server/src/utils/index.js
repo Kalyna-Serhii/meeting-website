@@ -2,6 +2,6 @@ export { default as handleValidationErrors } from './handleValidationErrors.js';
 export {
     loginValidation,
     registerValidation,
-    recieverFriendRequestValidation,
+    receiverFriendRequestValidation,
     senderFriendRequestValidation
 } from './validations.js';
