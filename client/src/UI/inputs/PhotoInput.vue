@@ -34,12 +34,11 @@
 
    methods: {
      handleFileChange(event) {
-       if (event.target.files.length > 0) {
-         this.photo = event.target.files[0];
-         this.imgUrl = URL.createObjectURL(this.photo);
-       } else {
-         this.imgUrl = this.userImg ?? this.defaultImgUrl;
-       }
+       const photo = event.target.files[0];
+       this.imgUrl = !photo
+           ? this.userImg ?? this.defaultImgUrl
+           : URL.createObjectURL(photo);
+       this.$emit('updated', this.imgUrl);
      }
    },
 

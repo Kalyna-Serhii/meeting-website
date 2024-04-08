@@ -16,8 +16,9 @@
             Logout
           </a>
           <router-link to="/my-account"  class="position-relative">
-            <img :src="this.serverPhotoUrl + user.photoLink" width="40" height="40"
-               class="d-inline-block align-text-top object-fit-cover rounded-5 ms-3">
+            <img :src="$store.state.userPhoto ?? this.serverPhotoUrl + user.photoLink"
+                 width="40" height="40"
+                 class="d-inline-block align-text-top object-fit-cover rounded-5 ms-3">
             <span class="position-absolute translate-middle badge rounded-pill bg-danger"
                   v-if="this.$store.getters.friendshipRequestsCount > 0"
                 style="top: 20%; left: 85%;">

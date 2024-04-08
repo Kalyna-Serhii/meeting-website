@@ -51,8 +51,9 @@
                   </div>
                   <div class="col-lg-6 col-md-7 col-sm-12">
                     <photo-input v-if="user.photoLink !== ''"
+                       @updated="photo => this.userPhoto = photo"
                        :default-img-url="defaultPhotoUrl"
-                       :user-img="this.serverPhotoUrl + user.photoLink"
+                       :user-img="$store.state.userPhoto ?? this.serverPhotoUrl + user.photoLink"
                        :required="false">
                     </photo-input>
                     <interests-list
@@ -149,6 +150,7 @@ export default {
         photoLink: '',
         interests: []
       },
+      userPhoto: null,
       friendshipRequestsUsers: [],
       defaultPhotoUrl: '/placeholder.jpg'
     }
@@ -189,7 +191,7 @@ export default {
           const formData = new FormData(this.$refs.form);
           formData.append('interests', JSON.stringify(this.user.interests));
           await api.userApi.updateUser(formData);
-          this.$store.commit('setCurrentUser', this.user);
+          this.$store.state.userPhoto = this.userPhoto;
           this.$refs.alert.alert('success', 'Successfully updated user');
         } catch (error) {
           this.$refs.alert.alert('danger',

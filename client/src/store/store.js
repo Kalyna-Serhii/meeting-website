@@ -4,6 +4,7 @@ import VueCookies from 'vue-cookies';
 export default createStore({
     state: {
         currentUser: null,
+        userPhoto: null,
         friendshipRequests: [],
         userFriendshipRequests: [],
         interests: [
