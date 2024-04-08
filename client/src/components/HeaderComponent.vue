@@ -1,78 +1,55 @@
 <template>
+  <alert ref="alert"></alert>
   <header>
-    <div class="logo">Logo</div>
-    <nav class="menu">
-      <router-link to="/">Home</router-link>
+    <nav class="navbar bg-body-tertiary">
+      <div class="container-xxl container-fluid">
+        <router-link class="navbar-brand" to="/">
+          <img src="/ico.png"
+               width="30" height="30"
+               class="d-inline-block align-text-top">
+            <span class="fw-semibold  ms-2">Meetings</span>
+        </router-link>
+        <div class="d-flex">
+          <a class="btn btn-secondary link-underline
+              link-underline-opacity-0"
+              @click="logout">
+            Logout
+          </a>
+          <router-link to="/my-account"  class="position-relative">
+            <img :src="this.serverPhotoUrl + user.photoLink" width="40" height="40"
+               class="d-inline-block align-text-top object-fit-cover rounded-5 ms-3">
+            <span class="position-absolute translate-middle badge rounded-pill bg-danger"
+                  v-if="this.$store.getters.friendshipRequestsCount > 0"
+                style="top: 20%; left: 85%;">
+              {{this.$store.getters.friendshipRequestsCount}}
+            </span>
+          </router-link>
+        </div>
+      </div>
     </nav>
-    <nav v-if="isAuth && $store.state.currentUser?.photoLink" class="auth">
-      <router-link to="/logout">Logout</router-link>
-      <router-link to="/profile" class="avatar-container">
-        <img :src="serverURL + /photos/ + $store.state.currentUser?.photoLink" alt="avatar" class="avatar">
-        <span v-if="$store.state?.senders && $store.state?.senders.length>0" class="badge">
-          {{ $store.state.senders.length }}
-        </span>
-      </router-link>
-    </nav>
-    <nav v-else class="auth">
-      <router-link to="/auth">Auth</router-link>
-    </nav>
-    <error-component></error-component>
   </header>
 </template>
 
 <script>
-import api from '../api';
-import {serverURL} from "@/api/axiosInstance";
-import ErrorComponent from './ErrorComponent.vue'
+import helpers from "@/mixins/helpers";
 
 export default {
+  mixins: [helpers],
+
   data() {
     return {
-      serverURL,
-      isAuth: localStorage.getItem('isAuth') || null,
-      error: false,
-      errorMessage: null,
-    };
+      user: ''
+    }
   },
-  methods: {
-    async getUser() {
-      try {
-        const user = await api.userApi.getUserByToken();
-        if (user) {
-          this.$store.commit('setCurrentUser', user);
-        }
-      } catch (error) {
-        if (error?.response.status !== 401) {
-          this.$store.commit('setError', error?.response?.data.message);
-        }
-      }
-    },
-    async getFriendsRequests() {
-      try {
-        const senders = await api.friendRequestApi.getReceivedFriendRequests();
-        this.$store.commit('setReceivedFriendRequests', senders);
-      } catch (error) {
-        if (error?.response.status !== 401) {
-          this.$store.commit('setError', error?.response?.data.message);
-        }
-      }
 
-      try {
-        const receivers = await api.friendRequestApi.getSentFriendRequests();
-        this.$store.commit('setSentFriendRequests', receivers);
-      } catch (error) {
-        if (error?.response.status !== 401) {
-          this.$store.commit('setError', error?.response?.data.message);
-        }
-      }
-    },
+  methods: {
+    logout() {
+      this.$store.dispatch('logout');
+      this.$router.push('/login');
+    }
   },
-  async mounted() {
-    this.getUser();
-    await this.getFriendsRequests();
+  created() {
+    this.user = this.$store.state.currentUser;
   },
-  components: {
-    ErrorComponent
-  },
-};
+}
 </script>

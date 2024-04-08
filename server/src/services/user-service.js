@@ -146,7 +146,7 @@ const UserService = {
     },
 
     async updateUser(token, body, photo) {
-        const {name, gender, age, phone, newPassword, interests} = body;
+        const {name, gender, age, phone, password, interests} = body;
         const interestsArray = JSON.parse(interests)
 
         const userData = tokenService.validateAccessToken(token);
@@ -166,8 +166,8 @@ const UserService = {
         updatedFields.age = age;
         updatedFields.phone = phone;
 
-        if (newPassword) {
-            const hashedPassword = await bcrypt.hash(newPassword, 3);
+        if (password) {
+            const hashedPassword = await bcrypt.hash(password, 3);
             updatedFields.password = hashedPassword;
         }
 

@@ -1,49 +1,71 @@
 import {createStore} from 'vuex';
+import VueCookies from 'vue-cookies';
 
 export default createStore({
     state: {
         currentUser: null,
-        senders: [],
-        receivers: [],
-        error: false,
-        errorMessage: ''
+        friendshipRequests: [],
+        userFriendshipRequests: [],
+        interests: [
+            'sport', 'music', 'cinema', 'books', 'travel', 'games', 'cooking', 'art', 'theatre', 'religion',
+            'fashion', 'cars', 'animals', 'nature', 'science', 'technology', 'politics', 'psychology', 'history',
+            'photography', 'philosophy'
+        ],
     },
     mutations: {
         setCurrentUser(state, user) {
             state.currentUser = user;
         },
         setReceivedFriendRequests(state, senders) {
-            state.senders = senders;
+            state.friendshipRequests = senders;
         },
         setSentFriendRequests(state, receivers) {
-            state.receivers = receivers;
+            state.userFriendshipRequests = receivers;
         },
         clearCurrentUser(state) {
             state.currentUser = null;
-            state.senders = [];
-            state.receivers = [];
-        },
-
-        setError(state, errorMessage) {
-            state.error = true;
-            state.errorMessage = errorMessage;
-        },
-        clearError(state) {
-            state.error = false;
-            state.errorMessage = '';
+            state.friendshipRequests = [];
+            state.userFriendshipRequests = [];
+            VueCookies.remove('accessToken', )
         }
     },
     actions: {
         logout({commit}) {
             commit('clearCurrentUser');
         },
-
-        showError({commit}, errorMessage) {
-            commit('setError', errorMessage);
+        addFriend({commit, state}, receiverId) {
+            commit('setSentFriendRequests',
+                [...state.userFriendshipRequests, receiverId]);
         },
-        clearError({commit}) {
-            commit('clearError');
+        cancelFriendRequest({commit, state}, receiverId) {
+            commit('setSentFriendRequests',
+                state.userFriendshipRequests.filter(id => id !== receiverId));
+        },
+        acceptFriendRequest({commit, state}, senderId) {
+            commit('setReceivedFriendRequests',
+                state.friendshipRequests.filter(id => id !== senderId));
+            commit('setCurrentUser', {
+                ...state.currentUser,
+                friends: [...state.currentUser.friends, senderId]
+            });
+        },
+        rejectFriendRequest({commit, state}, senderId) {
+            commit('setReceivedFriendRequests',
+                state.friendshipRequests.filter(id => id !== senderId));
+        },
+        deleteFromFriends({commit, state}, friendId) {
+            commit('setCurrentUser', {
+                ...state.currentUser,
+                friends: state.currentUser.friends.filter(id => id !== friendId)
+            });
         }
     },
-    getters: {}
+    getters: {
+        friendshipRequestsCount(state) {
+            const count = state.friendshipRequests.length;
+            return count > 9
+                ? '9+'
+                : count;
+        }
+    }
 });
