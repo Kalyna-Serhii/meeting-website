@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import UserModel from '../models/user-model.js';
 import InterestModel from '../models/interest-model.js';
 import UserInterestModel from "../models/user-interest-model.js";
+import {sequelize} from '../database/database.config.js';
 import tokenService from './token-service.js';
 import UserDto from '../dtos/user-dto.js';
 import ApiError from '../exceptions/api-error.js';
@@ -16,33 +17,40 @@ const AuthService = {
             throw ApiError.BadRequest(`User with ${phone} phone number already exists`);
         }
 
-        const hashedPassword = await bcrypt.hash(password, 3);
-        const newUser = await UserModel.create({
-            name,
-            gender,
-            age,
-            phone,
-            password: hashedPassword,
-            photoLink: photo.filename || photo,
-        });
+        const transaction = await sequelize.transaction();
+        try {
+            const hashedPassword = await bcrypt.hash(password, 3);
+            const newUser = await UserModel.create({
+                name,
+                gender,
+                age,
+                phone,
+                password: hashedPassword,
+                photoLink: photo.filename || photo,
+            }, {transaction});
 
-        for (const interest of interestsArray) {
+            for (const interest of interestsArray) {
+                let existsInterest = await InterestModel.findOne({where: {name: interest}}, {transaction});
+                if (!existsInterest) {
+                    existsInterest = await InterestModel.create({name: interest}, {transaction});
+                }
 
-            let existsInterest = await InterestModel.findOne({where: {name: interest}});
-            if (!existsInterest) {
-                existsInterest = await InterestModel.create({name: interest});
+                await UserInterestModel.create({
+                    UserId: newUser.id,
+                    InterestId: existsInterest.id
+                }, {transaction});
             }
 
-            await UserInterestModel.create({
-                UserId: newUser.id,
-                InterestId: existsInterest.id
-            });
-        }
+            await transaction.commit();
 
-        const userDto = new UserDto(newUser);
-        const tokens = tokenService.generateTokens({...userDto});
-        await tokenService.saveToken(userDto.id, tokens.refreshToken);
-        return {...tokens, user: userDto};
+            const userDto = new UserDto(newUser);
+            const tokens = tokenService.generateTokens({...userDto});
+            await tokenService.saveToken(userDto.id, tokens.refreshToken);
+            return {...tokens, user: userDto};
+        } catch (error) {
+            await transaction.rollback();
+            throw error;
+        }
     },
 
     async login(body) {

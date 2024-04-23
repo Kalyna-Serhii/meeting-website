@@ -1,3 +1,4 @@
+import {sequelize} from '../database/database.config.js';
 import UserModel from "../models/user-model.js";
 import InterestModel from "../models/interest-model.js";
 import UserInterestModel from "../models/user-interest-model.js";
@@ -160,39 +161,44 @@ const UserService = {
             throw ApiError.BadRequest(`User with ${phone} phone number already exists`);
         }
 
-        const updatedFields = {};
-        updatedFields.name = name;
-        updatedFields.gender = gender;
-        updatedFields.age = age;
-        updatedFields.phone = phone;
+        const transaction = await sequelize.transaction();
+        try {
+            const updatedFields = {};
+            updatedFields.name = name;
+            updatedFields.gender = gender;
+            updatedFields.age = age;
+            updatedFields.phone = phone;
 
-        if (password) {
-            const hashedPassword = await bcrypt.hash(password, 3);
-            updatedFields.password = hashedPassword;
-        }
-
-        if (photo) {
-            updatedFields.photoLink = photo.filename;
-            await photoService.deletePhoto(user.photoLink);
-        }
-
-        const userInterests = await UserInterestModel.findAll({where: {UserId: userId}});
-        for (const userInterest of userInterests) {
-            await userInterest.destroy();
-        }
-        for (const interest of interestsArray) {
-            let existsInterest = await InterestModel.findOne({where: {name: interest}});
-            if (!existsInterest) {
-                existsInterest = await InterestModel.create({name: interest});
+            if (password) {
+                const hashedPassword = await bcrypt.hash(password, 3);
+                updatedFields.password = hashedPassword;
             }
 
-            await UserInterestModel.create({
-                UserId: user.id,
-                InterestId: existsInterest.id
-            });
-        }
+            if (photo) {
+                updatedFields.photoLink = photo.filename;
+                await photoService.deletePhoto(user.photoLink);
+            }
 
-        await user.update(updatedFields);
+            await UserInterestModel.destroy({where: {UserId: userId}}, {transaction});
+
+            for (const interest of interestsArray) {
+                let existsInterest = await InterestModel.findOne({where: {name: interest}});
+                if (!existsInterest) {
+                    existsInterest = await InterestModel.create({name: interest}, {transaction});
+                }
+
+                await UserInterestModel.create({
+                    UserId: user.id,
+                    InterestId: existsInterest.id
+                }, {transaction});
+            }
+
+            await user.update(updatedFields, {transaction});
+            await transaction.commit();
+        } catch (error) {
+            await transaction.rollback();
+            throw error;
+        }
     },
 
     async deleteUser(token) {
@@ -204,8 +210,15 @@ const UserService = {
             throw ApiError.BadRequest(`No user found`);
         }
 
-        await photoService.deletePhoto(user.photoLink);
-        await user.destroy();
+        const transaction = await sequelize.transaction();
+        try {
+            await photoService.deletePhoto(user.photoLink);
+            await user.destroy({transaction});
+            await transaction.commit();
+        } catch (error) {
+            await transaction.rollback();
+            throw error;
+        }
     },
 };
 

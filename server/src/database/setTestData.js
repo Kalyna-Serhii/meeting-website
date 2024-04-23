@@ -3,14 +3,6 @@ import UserModel from "../models/user-model.js";
 
 const body = [
     {
-        name: "Test0",
-        gender: "man",
-        age: "1",
-        phone: "+38(000)-000-00-00",
-        password: "12345678",
-        interests: '["music", "cinema", "animals"]'
-    },
-    {
         name: "Test1",
         gender: "man",
         age: "1",
@@ -48,7 +40,7 @@ const body = [
         age: "5",
         phone: "+38(000)-000-00-05",
         password: "12345678",
-        interests: '["cinema", "nature", "travel", "politics"]'
+        interests: '["music", "cinema", "animals"]'
     },
     {
         name: "Test6",
@@ -60,7 +52,7 @@ const body = [
     },
     {
         name: "Test7",
-        gender: "woman",
+        gender: "man",
         age: "7",
         phone: "+38(000)-000-00-07",
         password: "12345678",
@@ -88,7 +80,7 @@ async function setTestData() {
     const users = await UserModel.findAll();
     if (!users.length) {
         for (let i = 0; i < body.length; i++) {
-            await AuthService.register(body[i], `Test${i}.jpg`)
+            await AuthService.register(body[i], `Test${i+1}.jpg`)
         }
     }
 }

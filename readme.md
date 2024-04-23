@@ -27,8 +27,7 @@ docker compose up
 ## Usage
 #### Open **http://localhost:8081**
 
-### There are 10 already created test users:
-* Phone: +38(000)-000-00-00, password: 12345678
+### There are 9 already created test users:
 * Phone: +38(000)-000-00-01, password: 12345678
 * Phone: +38(000)-000-00-02, password: 12345678
 * Phone: +38(000)-000-00-03, password: 12345678
