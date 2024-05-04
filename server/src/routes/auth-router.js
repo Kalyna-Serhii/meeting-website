@@ -1,6 +1,6 @@
 import express from 'express';
 import authController from '../controllers/auth-controller.js';
-import authMiddleware from "../middlewares/auth-middleware.js";
+import authMiddleware from '../middlewares/auth-middleware.js';
 import upload from '../middlewares/image-middleware.js';
 import { loginValidation, registerValidation, handleValidationErrors } from '../utils/index.js';
 

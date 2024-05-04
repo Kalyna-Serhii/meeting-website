@@ -1,21 +1,21 @@
 class UserDto {
-    id;
+  id;
 
-    name;
+  name;
 
-    gender;
+  gender;
 
-    age;
+  age;
 
-    photoLink;
+  photoLink;
 
-    constructor(model) {
-        this.id = model.id;
-        this.name = model.name;
-        this.gender = model.gender;
-        this.age = model.age;
-        this.photoLink = model.photoLink;
-    }
+  constructor(model) {
+    this.id = model.id;
+    this.name = model.name;
+    this.gender = model.gender;
+    this.age = model.age;
+    this.photoLink = model.photoLink;
+  }
 }
 
 export default UserDto;

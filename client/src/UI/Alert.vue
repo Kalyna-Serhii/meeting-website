@@ -1,17 +1,23 @@
 <template>
   <transition>
-    <div ref="liveAlertPlaceholder" class="live-alert-container" v-if="showAlert">
+    <div
+      v-if="showAlert"
+      ref="liveAlertPlaceholder"
+      class="live-alert-container"
+    >
       <div class="container-fluid">
         <div class="row justify-content-center">
           <div class="col-6 mt-3">
-            <div :class="['alert', `alert-${alertType}`, 'alert-dismissible']" role="alert">
-              <div>{{message}}</div>
+            <div
+              :class="['alert', `alert-${alertType}`, 'alert-dismissible']"
+              role="alert"
+            >
+              <div>{{ message }}</div>
               <button
-                  class="btn-close"
-                  aria-label="Close"
-                  @click="this.showAlert=false"
-              >
-              </button>
+                class="btn-close"
+                aria-label="Close"
+                @click="showAlert=false"
+              />
             </div>
           </div>
         </div>
@@ -26,18 +32,18 @@ export default {
     return {
       showAlert: false,
       alertType: '',
-      message: ''
-    }
+      message: '',
+    };
   },
   methods: {
     alert(alertType, message) {
       this.showAlert = true;
       this.alertType = alertType;
       this.message = message;
-      setTimeout(() => this.showAlert = false, 2000);
-    }
-  }
-}
+      setTimeout(() => { this.showAlert = false; }, 2000);
+    },
+  },
+};
 </script>
 
 <style scoped>

@@ -1,17 +1,24 @@
 <template>
-  <label for="phone" class="form-label ms-2">Name</label>
-  <input class="form-control"
-         :value="modelValue"
-         @input="$emit('input', $event.target.value)"
-         id="name"
-         name="name"
-         placeholder="Enter name"
-         minlength="2"
-         :disabled="readonly"
-         pattern="^[A-Z][a-zA-Z]*$"
-         required>
-  <div class="invalid-feedback">
-    Please enter your valid name
+  <div>
+    <label
+      for="phone"
+      class="form-label ms-2"
+    >Name</label>
+    <input
+      id="name"
+      class="form-control"
+      :value="modelValue"
+      name="name"
+      placeholder="Enter name"
+      minlength="2"
+      :disabled="readonly"
+      pattern="^[A-Z][a-zA-Z]*$"
+      required
+      @input="$emit('input', $event.target.value)"
+    >
+    <div class="invalid-feedback">
+      Please enter your valid name
+    </div>
   </div>
 </template>
 
@@ -19,7 +26,7 @@
 export default {
   props: {
     modelValue: String,
-    readonly: Boolean
-  }
-}
+    readonly: Boolean,
+  },
+};
 </script>

@@ -1,18 +1,27 @@
 <template>
-  <div class="dropdown d-grid" ref="dropdown">
-    <button :class="[`form-select bg-${bg}`]"
-            type="button"
-            id="dropdownMenuButton"
-            @click="toggleDropdown">
-      {{name}}
-    </button>
-    <div class="dropdown-menu px-2 w-100"
-         :class="{ 'show': dropdownOpen }" id="dropdownMenu"
+  <div
+    ref="dropdown"
+    class="dropdown d-grid"
+  >
+    <button
+      id="dropdownMenuButton"
+      :class="[`form-select bg-${bg}`]"
+      type="button"
+      @click="toggleDropdown"
     >
-      <slot></slot>
-      <button class="btn btn-primary btn-sm mt-2 w-100"
-            v-if="search"
-            @click="closeDropdown">
+      {{ name }}
+    </button>
+    <div
+      id="dropdownMenu"
+      class="dropdown-menu px-2 w-100"
+      :class="{ 'show': dropdownOpen }"
+    >
+      <slot />
+      <button
+        v-if="search"
+        class="btn btn-primary btn-sm mt-2 w-100"
+        @click="closeDropdown"
+      >
         Search
       </button>
     </div>
@@ -20,33 +29,31 @@
 </template>
 
 <script>
-import InterestsList from "@/UI/inputs/InterestsList.vue";
 
 export default {
-  components: {InterestsList},
 
   props: {
     name: String,
     bg: String,
-    search: Boolean
+    search: Boolean,
   },
 
   data() {
     return {
-      dropdownOpen: false
+      dropdownOpen: false,
     };
   },
 
   methods: {
     toggleDropdown() {
       this.dropdownOpen
-          ? this.closeDropdown()
-          : this.openDropdown();
+        ? this.closeDropdown()
+        : this.openDropdown();
     },
 
     openDropdown() {
-        this.dropdownOpen = true;
-        document.addEventListener('click', this.handleClickOutside);
+      this.dropdownOpen = true;
+      document.addEventListener('click', this.handleClickOutside);
     },
 
     closeDropdown() {
@@ -60,9 +67,9 @@ export default {
           && !this.$refs.dropdown.contains(event.target)) {
         this.closeDropdown();
       }
-    }
+    },
   },
-}
+};
 </script>
 
 <style scoped>

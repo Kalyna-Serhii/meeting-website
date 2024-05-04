@@ -1,63 +1,73 @@
 <template>
-  <div class="row" v-if="inline">
+  <div
+    v-if="inline"
+    class="row"
+  >
     <div class="col-6">
-      <age-input :modelValue="minAge"
-          @update:modelValue="$emit('update:minAge', $event)"
-          @changed="newValue => handleMinAgeChange(newValue)"
-          :placeholder="'Age from'">
-      </age-input>
+      <age-input
+        :model-value="minAge"
+        :placeholder="'Age from'"
+        @update:modelValue="$emit('update:minAge', $event)"
+        @changed="newValue => handleMinAgeChange(newValue)"
+      />
     </div>
     <div class="col-6">
-      <age-input :modelValue="maxAge"
-          @update:modelValue="$emit('update:maxAge', $event)"
-          @changed="newValue => handleMaxAgeChange(newValue)"
-          :placeholder="'Age to'">
-      </age-input>
+      <age-input
+        :model-value="maxAge"
+        :placeholder="'Age to'"
+        @update:modelValue="$emit('update:maxAge', $event)"
+        @changed="newValue => handleMaxAgeChange(newValue)"
+      />
     </div>
   </div>
 
   <div v-else>
-    <age-input :modelValue="minAge"
-       @update:modelValue="$emit('update:minAge', $event)"
-       @changed="newValue => handleMinAgeChange(newValue)"
-       :placeholder="'Age from'">
-    </age-input>
+    <age-input
+      :model-value="minAge"
+      :placeholder="'Age from'"
+      @update:modelValue="$emit('update:minAge', $event)"
+      @changed="newValue => handleMinAgeChange(newValue)"
+    />
     <div class="mt-2">
-      <age-input :modelValue="maxAge"
-         @update:modelValue="$emit('update:maxAge', $event)"
-         @changed="newValue => handleMaxAgeChange(newValue)"
-         :placeholder="'Age to'">
-      </age-input>
+      <age-input
+        :model-value="maxAge"
+        :placeholder="'Age to'"
+        @update:modelValue="$emit('update:maxAge', $event)"
+        @changed="newValue => handleMaxAgeChange(newValue)"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import AgeInput from "@/UI/inputs/AgeInput.vue";
+import AgeInput from '@/UI/inputs/AgeInput.vue';
 
 export default {
-  components: {AgeInput},
+  components: { AgeInput },
 
   props: {
-    minAge: {String, Number},
-    maxAge: {String, Number},
-    inline: Boolean
+    minAge: { String, Number },
+    maxAge: { String, Number },
+    inline: Boolean,
   },
 
   methods: {
     handleMinAgeChange(newValue) {
-      if (parseInt(newValue) > parseInt(this.maxAge)) {
-        newValue = this.maxAge;
+      let updatedValue = newValue;
+      if (parseInt(newValue, 10) > parseInt(this.maxAge, 10)) {
+        updatedValue = this.maxAge;
       }
-      this.$emit('update:minAge', newValue)
+
+      this.$emit('update:minAge', updatedValue);
     },
     handleMaxAgeChange(newValue) {
-      if (parseInt(newValue) < this.minAge) {
-        newValue = this.minAge;
+      let updatedValue = newValue;
+      if (parseInt(newValue, 10) < this.minAge) {
+        updatedValue = this.minAge;
       }
-      this.$emit('update:maxAge', newValue)
+      this.$emit('update:maxAge', updatedValue);
     },
 
-  }
-}
+  },
+};
 </script>

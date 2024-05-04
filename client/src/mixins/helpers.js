@@ -1,25 +1,24 @@
-import Inputmask from "inputmask"
-import {serverURL} from "@/api/axiosInstance";
+import InputMask from 'inputmask';
+import { serverURL } from '@/api/axiosInstance';
 
 export default {
-    methods: {
-        validateForm() {
-            const form = this.$refs.form;
-            if (form.checkValidity()) {
-                return true
-            } else {
-                form.classList.add('was-validated');
-            }
-        },
-        addPhoneMask(phone) {
-            const inputMask = new Inputmask('+38(999)-999-99-99');
-            inputMask.mask(phone);
-        }
+  methods: {
+    validateForm() {
+      const { form } = this.$refs;
+      if (form.checkValidity()) {
+        return true;
+      }
+      form.classList.add('was-validated');
     },
+    addPhoneMask(phone) {
+      const inputMask = new InputMask('+38(999)-999-99-99');
+      inputMask.mask(phone);
+    },
+  },
 
-    computed: {
-        serverPhotoUrl() {
-            return `${serverURL}/photos/`
-        }
-    }
-}
+  computed: {
+    serverPhotoUrl() {
+      return `${serverURL}/photos/`;
+    },
+  },
+};

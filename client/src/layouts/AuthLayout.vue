@@ -1,27 +1,32 @@
 <template>
   <div class="page bg-lightblue">
     <div class="container content d-flex align-items-center py-5">
-      <div :class="[`col-lg-${wide ? '8' : '6'}`, `offset-lg-${wide ? '2' : '3'}`,
-                  `col-md-${wide ? '10' : '8'}`, `offset-md-${wide ? '1' : '2'}`,
-                  'col-12', 'offset-0']">
+      <div
+        :class="[`col-lg-${wide ? '8' : '6'}`, `offset-lg-${wide ? '2' : '3'}`,
+                 `col-md-${wide ? '10' : '8'}`, `offset-md-${wide ? '1' : '2'}`,
+                 'col-12', 'offset-0']"
+      >
         <div class="main-block">
-          <slot></slot>
+          <slot />
         </div>
       </div>
     </div>
-    <footer-component></footer-component>
+    <footer-component />
   </div>
 </template>
 
 <script>
-import FooterComponent from "@/components/FooterComponent.vue";
+import FooterComponent from '@/components/FooterComponent.vue';
 
 export default {
-  components: {FooterComponent},
+  components: { FooterComponent },
   props: {
-    wide: false
-  }
-}
+    wide: {
+      type: Boolean,
+      default: false,
+    },
+  },
+};
 </script>
 
 <style scoped>
