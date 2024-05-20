@@ -12,6 +12,12 @@ const sequelize = new Sequelize(NAME, USERNAME, PASSWORD, {
   dialect: 'postgres',
   port: PORT,
   logging: false, // відключення виведення SQL запитів до терміналу
+  ssl: true,
+  dialectOptions: {
+    ssl: {
+      require: true,
+    },
+  },
 });
 
 (async () => {

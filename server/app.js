@@ -8,8 +8,7 @@ import corsOptions from './src/cors/cors.config.js';
 import errorMiddleware from './src/middlewares/error-middleware.js';
 import { authRouter, friendRequestRouter, userRouter } from './src/routes/index.js';
 
-const HOST = process.env.SERVER_HOST;
-const PORT = process.env.SERVER_PORT;
+const port = process.env.PORT || 3000;
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -23,6 +22,8 @@ app.use('/api', authRouter, userRouter, friendRequestRouter);
 app.use('/api/photos', express.static(path.join(dirname, 'photos')));
 app.use(errorMiddleware);
 
-app.listen(PORT, () => {
-  console.log(`Server listens http://${HOST}:${PORT}/`);
-});
+app.get('/', (req, res) => res.send('Express on Vercel'));
+
+app.listen(port, () => console.log(`Server ready on port ${port}.`));
+
+export default app;
